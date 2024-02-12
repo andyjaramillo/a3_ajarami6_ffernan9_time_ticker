@@ -25,6 +25,7 @@ import com.example.a3_ajarami6_ffernan9.databinding.FragmentSecondBinding;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.stream.Collectors;
 
 public class SecondFragment extends Fragment {
 
@@ -51,16 +52,23 @@ public class SecondFragment extends Fragment {
         String timeZonesString = sharedPref.getString("personal_timezone", "");
         String[] timeZonesArray = timeZonesString.split(",");
         List<String> timeZones = new ArrayList<>(Arrays.asList(timeZonesArray));
+        // Retrieve the string array from the strings.xml resource file
+        String[] stringArray = getResources().getStringArray(R.array.full_time_zone_array);
+        List<String> fullTimeZones = new ArrayList<>(Arrays.asList(stringArray));
+        fullTimeZones = fullTimeZones.stream()
+                .filter(timeZone -> !timeZones.contains(timeZone))
+                .collect(Collectors.toList());
 
         Spinner spinner = binding.totalList;
-        ArrayAdapter<CharSequence> adapter = ArrayAdapter.createFromResource(
+        ArrayAdapter<String> adapter = new ArrayAdapter<>(
                 getActivity(),
-                R.array.full_time_zone_array,
-                android.R.layout.simple_spinner_item
+                android.R.layout.simple_spinner_item,
+                fullTimeZones
         );
         adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
 // Apply the adapter to the spinner.
         spinner.setAdapter(adapter);
+        adapter.setNotifyOnChange(true);
 
         Spinner personalSpinner = binding.personalList;
         ArrayAdapter<String> personalAdapter = new ArrayAdapter<>(
@@ -99,6 +107,13 @@ public class SecondFragment extends Fragment {
                 editor.apply();
                 personalAdapter.clear();
                 personalAdapter.addAll(timeZonesList);
+                String[] stringArray = getResources().getStringArray(R.array.full_time_zone_array);
+                List<String> fullTimeZones = new ArrayList<>(Arrays.asList(stringArray));
+                fullTimeZones = fullTimeZones.stream()
+                        .filter(timeZone -> !timeZonesList.contains(timeZone))
+                        .collect(Collectors.toList());
+                adapter.clear();
+                adapter.addAll(fullTimeZones);
 
 //                String[] personalTimeZoneArray = getResources().getStringArray(R.array.personal_time_zone_array);
 //                List<String> modifiedTimeZonesList = new ArrayList<>(Arrays.asList(personalTimeZoneArray));
@@ -132,6 +147,13 @@ public class SecondFragment extends Fragment {
 // Update the adapter to reflect the changes
                 personalAdapter.clear();
                 personalAdapter.addAll(timeZonesList);
+                String[] stringArray = getResources().getStringArray(R.array.full_time_zone_array);
+                List<String> fullTimeZones = new ArrayList<>(Arrays.asList(stringArray));
+                fullTimeZones = fullTimeZones.stream()
+                        .filter(timeZone -> !timeZonesList.contains(timeZone))
+                        .collect(Collectors.toList());
+                adapter.clear();
+                adapter.addAll(fullTimeZones);
 
             }
         });
