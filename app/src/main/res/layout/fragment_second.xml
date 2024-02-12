@@ -15,4 +15,79 @@
         android:textSize="50dp"
         android:text="Settings" />
 
+
+    <TextView
+        android:id="@+id/Total_list_text"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="@string/total_list_of_time_zones" />
+
+    <Spinner
+        android:id="@+id/total_list"
+        android:layout_width="match_parent"
+        android:layout_height="64dp"
+        />
+
+    <TextView
+        android:id="@+id/display_new_timezone_text"
+        android:layout_width="match_parent"
+        android:layout_height="71dp"
+        android:gravity="center"
+        android:textSize="35sp"
+        android:text="@string/to_be_selected" />
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <Button
+            android:id="@+id/submitButton"
+            android:layout_width="117dp"
+            android:layout_height="wrap_content"
+            android:width="25dp"
+            android:gravity="center_horizontal"
+            android:text="@string/submit"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintVertical_bias="0.037" />
+
+        <TextView
+            android:id="@+id/personaListText"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/your_list"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.079"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintVertical_bias="0.226" />
+
+        <Spinner
+            android:id="@+id/personalList"
+            android:layout_width="224dp"
+            android:layout_height="85dp"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.0"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintVertical_bias="0.532" />
+
+        <Button
+            android:id="@+id/removeButton"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/remove"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.574"
+            app:layout_constraintStart_toEndOf="@+id/personalList"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintVertical_bias="0.537" />
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+
 </LinearLayout>

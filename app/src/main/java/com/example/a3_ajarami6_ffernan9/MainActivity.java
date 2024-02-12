@@ -1,11 +1,14 @@
 package com.example.a3_ajarami6_ffernan9;
 
+import android.content.Context;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 
 import com.google.android.material.snackbar.Snackbar;
 
 import androidx.appcompat.app.AppCompatActivity;
 
+import android.text.TextUtils;
 import android.view.View;
 
 import androidx.core.view.WindowCompat;
@@ -27,6 +30,13 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        SharedPreferences sharedPref = getSharedPreferences("my_preferences", Context.MODE_PRIVATE);
+            // Initialize with default values
+        String[] defaultArray = {"America/New_York", "America/Los_Angeles", "Europe/Berlin", "Europe/Istanbul", "Asia/Singapore", "Asia/Tokyo", "Australia/Canberra"};
+        String jsonArray = TextUtils.join(",", defaultArray);
+        SharedPreferences.Editor editor = sharedPref.edit();
+        editor.putString("personal_timezone", jsonArray);
+        editor.apply();
 
         binding = ActivityMainBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());

@@ -23,10 +23,16 @@ import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
+//import TimezoneConverter;
+import com.example.a3_ajarami6_ffernan9.TimeZoneConverter;
 import androidx.navigation.fragment.NavHostFragment;
 
 import com.example.a3_ajarami6_ffernan9.databinding.FragmentFirstBinding;
 import com.example.a3_ajarami6_ffernan9.databinding.ModalViewBinding;
+
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 
 public class FirstFragment extends Fragment {
 
@@ -48,11 +54,17 @@ public class FirstFragment extends Fragment {
 
     public void onViewCreated(@NonNull View view, Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
+        Context context = getActivity();
+        assert context != null;
         Spinner spinner = binding.spinner;
-        ArrayAdapter<CharSequence> adapter = ArrayAdapter.createFromResource(
+        SharedPreferences sharedPref = context.getSharedPreferences("my_preferences", Context.MODE_PRIVATE);
+        String timeZonesString = sharedPref.getString("personal_timezone", "");
+        String[] timeZonesArray = timeZonesString.split(",");
+        List<String> timeZones = new ArrayList<>(Arrays.asList(timeZonesArray));
+        ArrayAdapter<String> adapter = new ArrayAdapter<>(
                 getActivity(),
-                R.array.time_zone_array,
-                android.R.layout.simple_spinner_item
+                android.R.layout.simple_spinner_item,
+                timeZones
         );
         adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
 // Apply the adapter to the spinner.
@@ -233,59 +245,19 @@ public class FirstFragment extends Fragment {
     }
 
     private int getOffset(String item) {
-        int offset = 0;
-        switch (item) {
-            case "America/New_York":
-                offset = -5;
-                break;
-            case "America/Los_Angeles":
-                offset = -8;
-                break;
-            case "Europe/Berlin":
-                offset = 1;
-                break;
-            case "Europe/Istanbul":
-                offset = 2;
-                break;
-            case "Asia/Singapore":
-                offset = 8;
-                break;
-            case "Asia/Tokyo":
-                offset = 9;
-                break;
-            case "Australia/Canberra":
-                offset = 10;
-                break;
-        }
+        String[] parts = item.split("\\s+");
+        // Extract the offset part (e.g., "-05:00")
+        String offsetString = parts[1];
+        // Remove the ":" from the offset string
+        offsetString = offsetString.replace(":", "");
+        // Parse the offset string to an integer
+        int offset = Integer.parseInt(offsetString);
+        // Return the offset
         return offset;
     }
 
     private String getGMTTime(String item) {
-        String gmtTime = "";
-        switch (item) {
-            case "America/New_York":
-                gmtTime = "GMT -05:00";
-                break;
-            case "America/Los_Angeles":
-                gmtTime = "GMT -08:00";
-                break;
-            case "Europe/Berlin":
-                gmtTime = "GMT +01:00";
-                break;
-            case "Europe/Istanbul":
-                gmtTime = "GMT +02:00";
-                break;
-            case "Asia/Singapore":
-                gmtTime = "GMT +08:00";
-                break;
-            case "Asia/Tokyo":
-                gmtTime = "GMT +09:00";
-                break;
-            case "Australia/Canberra":
-                gmtTime = "GMT +10:00";
-                break;
-        }
-        return gmtTime;
+        return TimeZoneConverter.convertToGMT(item);
     }
 
     TextWatcher textWatcher = new TextWatcher() {

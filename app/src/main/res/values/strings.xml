@@ -57,6 +57,11 @@
     <string name="string_00">00</string>
     <string name="string_12">12</string>
     <string name="am_pm">Am|Pm</string>
+    <string name="total_list_of_time_zones">Total list of time zones</string>
+    <string name="to_be_selected">To be selected</string>
+    <string name="submit">Submit</string>
+    <string name="your_list">Your List</string>
+    <string name="remove">Remove</string>
     <string-array name="time_zone_array">
         <item>America/New_York</item>
         <item>America/Los_Angeles</item>
@@ -66,6 +71,121 @@
         <item>Asia/Tokyo</item>
         <item>Australia/Canberra</item>
     </string-array>
+
+    <string-array name="full_time_zone_array">
+        <item>America/New_York</item>
+        <item>America/Los_Angeles</item>
+        <item>Europe/Berlin</item>
+        <item>Europe/Istanbul</item>
+        <item>Asia/Singapore</item>
+        <item>Asia/Tokyo</item>
+        <item>Australia/Canberra</item>
+        <item>America/Chicago</item>
+        <item>America/Denver</item>
+        <item>America/Phoenix</item>
+        <item>America/Indiana/Indianapolis</item>
+        <item>America/Mexico_City</item>
+        <item>America/Sao_Paulo</item>
+        <item>America/Argentina/Buenos_Aires</item>
+        <item>America/Toronto</item>
+        <item>Europe/London</item>
+        <item>Europe/Paris</item>
+        <item>Europe/Rome</item>
+        <item>Europe/Moscow</item>
+        <item>Europe/Madrid</item>
+        <item>Europe/Amsterdam</item>
+        <item>Europe/Oslo</item>
+        <item>Europe/Stockholm</item>
+        <item>Europe/Athens</item>
+        <item>Europe/Zurich</item>
+        <item>Europe/Brussels</item>
+        <item>Europe/Prague</item>
+        <item>Europe/Vienna</item>
+        <item>Europe/Budapest</item>
+        <item>Europe/Warsaw</item>
+        <item>Asia/Dubai</item>
+        <item>Asia/Jerusalem</item>
+        <item>Asia/Kolkata</item>
+        <item>Asia/Shanghai</item>
+        <item>Asia/Hong_Kong</item>
+        <item>Asia/Seoul</item>
+        <item>Asia/Jakarta</item>
+        <item>Asia/Bangkok</item>
+        <item>Asia/Kuala_Lumpur</item>
+        <item>Asia/Manila</item>
+        <item>Asia/Taipei</item>
+        <item>Asia/Dhaka</item>
+        <item>Asia/Colombo</item>
+        <item>Asia/Kabul</item>
+        <item>Asia/Tehran</item>
+        <item>Asia/Baghdad</item>
+        <item>Asia/Riyadh</item>
+        <item>Asia/Kuwait</item>
+        <item>Asia/Qatar</item>
+        <item>Asia/Muscat</item>
+        <item>Africa/Johannesburg</item>
+        <item>Africa/Cairo</item>
+        <item>Africa/Lagos</item>
+        <item>Africa/Nairobi</item>
+        <item>Africa/Casablanca</item>
+        <item>Australia/Sydney</item>
+        <item>Australia/Melbourne</item>
+        <item>Australia/Brisbane</item>
+        <item>Australia/Perth</item>
+        <item>Australia/Adelaide</item>
+        <item>Australia/Hobart</item>
+        <item>Pacific/Auckland</item>
+        <item>Pacific/Honolulu</item>
+        <item>Pacific/Tahiti</item>
+        <item>Pacific/Fiji</item>
+        <item>Pacific/Midway</item>
+        <item>Pacific/Samoa</item>
+        <item>Pacific/Niue</item>
+        <item>Pacific/Pago_Pago</item>
+        <item>Pacific/Honolulu</item>
+        <item>America/Adak</item>
+        <item>Pacific/Gambier</item>
+        <item>Pacific/Pitcairn</item>
+        <item>America/Anchorage</item>
+        <item>America/Juneau</item>
+        <item>America/Metlakatla</item>
+        <item>America/Nome</item>
+        <item>America/Sitka</item>
+        <item>America/Yakutat</item>
+        <item>Pacific/Marquesas</item>
+        <item>America/Dawson</item>
+        <item>America/Los_Angeles</item>
+        <item>America/Tijuana</item>
+        <item>America/Vancouver</item>
+        <item>America/Whitehorse</item>
+        <item>Pacific/Pitcairn</item>
+        <item>America/Boise</item>
+        <item>America/Cambridge_Bay</item>
+        <item>America/Chihuahua</item>
+        <item>America/Creston</item>
+        <item>America/Dawson_Creek</item>
+        <item>America/Edmonton</item>
+        <item>America/Fort_Nelson</item>
+        <item>America/Hermosillo</item>
+        <item>America/Inuvik</item>
+        <item>America/Mazatlan</item>
+        <item>America/Ojinaga</item>
+        <item>America/Phoenix</item>
+        <item>America/Shiprock</item>
+        <item>America/Yellowknife</item>
+    </string-array>
+
+    <string-array name="personal_time_zone_array">
+        <item>America/New_York</item>
+        <item>America/Los_Angeles</item>
+        <item>Europe/Berlin</item>
+        <item>Europe/Istanbul</item>
+        <item>Asia/Singapore</item>
+        <item>Asia/Tokyo</item>
+        <item>Australia/Canberra</item>
+    </string-array>
+    <string name="personal_time_zone_string"></string>
+
     <string-array name="am_pm">
         <item>AM</item>
         <item>PM</item>
