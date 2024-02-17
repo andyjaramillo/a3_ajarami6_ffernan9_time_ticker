@@ -1,44 +1,35 @@
 package com.example.a3_ajarami6_ffernan9;
 
-import android.app.AlertDialog;
-import android.app.Dialog;
+import android.app.TimePickerDialog;
 import android.content.Context;
-import android.content.DialogInterface;
-import android.content.SharedPreferences;
 import android.os.Bundle;
-import android.text.Editable;
-import android.text.TextWatcher;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.Window;
-import android.view.WindowManager;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Spinner;
-import android.widget.Switch;
 import android.widget.TextView;
+import android.widget.TimePicker;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
-//import TimezoneConverter;
-import com.example.a3_ajarami6_ffernan9.TimeZoneConverter;
-import androidx.navigation.fragment.NavHostFragment;
 
 import com.example.a3_ajarami6_ffernan9.databinding.FragmentFirstBinding;
-import com.example.a3_ajarami6_ffernan9.databinding.ModalViewBinding;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
+import java.util.Date;
+import java.util.Locale;
 
 public class FirstFragment extends Fragment {
 
     private FragmentFirstBinding binding;
     private String originalTime = "";
-
+    private TimePickerDialog originalTimePicker;
+    private boolean format24Hr;
 
     @Override
     public View onCreateView(
@@ -48,7 +39,6 @@ public class FirstFragment extends Fragment {
 
         binding = FragmentFirstBinding.inflate(inflater, container, false);
         return binding.getRoot();
-
     }
 
 
@@ -56,35 +46,25 @@ public class FirstFragment extends Fragment {
         super.onViewCreated(view, savedInstanceState);
         Context context = getActivity();
         assert context != null;
-        Spinner spinner = binding.spinner;
-        SharedPreferences sharedPref = context.getSharedPreferences("my_preferences", Context.MODE_PRIVATE);
-        String timeZonesString = sharedPref.getString("personal_timezone", "");
-        String[] timeZonesArray = timeZonesString.split(",");
-        List<String> timeZones = new ArrayList<>(Arrays.asList(timeZonesArray));
-        ArrayAdapter<String> adapter = new ArrayAdapter<>(
-                getActivity(),
-                android.R.layout.simple_spinner_item,
-                timeZones
+
+        format24Hr = false; // TODO: get format setting
+        updateOriginalTimeText();
+
+        Spinner timeZoneSpinner = view.findViewById(R.id.time_zone_spinner);
+
+        ArrayAdapter<CharSequence> spinnerAdapter = ArrayAdapter.createFromResource(
+            context,
+            R.array.time_zone_array,
+            R.layout.custom_spinner
         );
-        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-// Apply the adapter to the spinner.
-        spinner.setAdapter(adapter);
 
-        Spinner spinner2 = binding.spinner2;
-        ArrayAdapter<CharSequence> adapter2 = ArrayAdapter.createFromResource(
-                getActivity(),
-                R.array.time_zone_array,
-                android.R.layout.simple_spinner_item
-        );
-        adapter2.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-// Apply the adapter to the spinner.
-        spinner2.setAdapter(adapter2);
-
-
-        binding.spinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+        spinnerAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        timeZoneSpinner.setDropDownVerticalOffset(250);
+        timeZoneSpinner.setAdapter(spinnerAdapter);
+        timeZoneSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
-            public void onItemSelected(AdapterView<?> adapterView, View view, int position, long id) {
-                updateGMTText(adapterView.getItemAtPosition(position).toString());
+            public void onItemSelected(AdapterView<?> adapter, View view, int position, long id) {
+                updateGMTCurrText(adapter.getSelectedItem().toString());
             }
 
             @Override
@@ -93,47 +73,40 @@ public class FirstFragment extends Fragment {
             }
         });
 
-        binding.spinner2.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+        view.findViewById(R.id.original_time_picker).setOnClickListener(new View.OnClickListener() {
             @Override
-            public void onItemSelected(AdapterView<?> adapterView, View view, int position, long id) {
-                updateGMTHomeText(adapterView.getItemAtPosition(position).toString());
-            }
+            public void onClick(View view) {
+                TimePickerDialog.OnTimeSetListener onTimeSetListener = new TimePickerDialog.OnTimeSetListener() {
+                    @Override
+                    public void onTimeSet(TimePicker timePicker, int hour, int minute) {
+                        // TODO: update curr time
+                        Log.d("hour", hour + ":" + minute);
+                    }
+                };
 
-            @Override
-            public void onNothingSelected(AdapterView<?> adapterView) {
-                // do nothing
+                Calendar cal = Calendar.getInstance();
+                int hour = cal.get(Calendar.HOUR_OF_DAY);
+                int minute = cal.get(Calendar.MINUTE);
+                originalTimePicker = new TimePickerDialog(
+                    context,
+                    onTimeSetListener,
+                    hour,
+                    minute,
+                    format24Hr
+                );
+
+                originalTimePicker.show();
             }
         });
 
-        binding.originalTimeButton.setOnClickListener(new View.OnClickListener() {
+
+
+        view.findViewById(R.id.convert_button).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Dialog dialog = onCreateDialog(savedInstanceState);
-                dialog.show();
-
-            }
-        });
-
-
-
-        binding.convertButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-
                 updateFinalTimeText();
             }
         });
-
-
-
-
-//        binding.buttonFirst.setOnClickListener(new View.OnClickListener() {
-//            @Override
-//            public void onClick(View view) {
-//                NavHostFragment.findNavController(FirstFragment.this)
-//                        .navigate(R.id.action_FirstFragment_to_SecondFragment);
-//            }
-//        });
     }
 
     public void onCloseButtonClicked(String buttonText) {
@@ -141,29 +114,31 @@ public class FirstFragment extends Fragment {
         originalTime = buttonText;
     }
 
-    private void updateOriginalTimeText(String time) {
-        originalTime = time;
+    private void updateOriginalTimeText() {
+        String timeFormat = format24Hr ? "H:mm" : "h:mm a";
+        String currTime = new SimpleDateFormat(timeFormat, Locale.US).format(new Date());
+        TextView orig_time_val = binding.content.findViewById(R.id.original_time_val);
+        orig_time_val.setText(currTime);
     }
 
     private void updateFinalTimeText() {
+        String originalTime = binding.originalTimeVal.getText().toString();
 
-        String originalTime = binding.originalTimeButton.getText().toString();
-        String gmtCurrent = binding.gmtCurrentText.getText().toString();
-        String gmtHome = binding.gmtHomeText.getText().toString();
-
-        String hourString = originalTime.split(" ")[0].split(":")[0];
-        String minuteString = originalTime.split(" ")[0].split(":")[1];
-        int hourInt = Integer.parseInt(hourString);
-        int minuteInt = Integer.parseInt(minuteString);
+        String[] originalTimeParts = originalTime.split(" ");
+        String[] hourMinArray = originalTimeParts[0].split(":");
+        int hourInt = Integer.parseInt(hourMinArray[0]);
+        int minuteInt = Integer.parseInt(hourMinArray[1]);
+        boolean invalidHr = hourInt < 1 || (hourInt > 12);
         if(hourInt > 12 || hourInt < 1 || minuteInt > 59 || minuteInt < 0) {
             Toast.makeText(getActivity(), "Invalid Time", Toast.LENGTH_SHORT).show();
             return;
         }
 
-
+        TextView homeOffsetView = binding.content.findViewById(R.id.home_gmt_offset);
+        TextView currOffsetView = binding.content.findViewById(R.id.curr_gmt_offset);
         String finalTime = "";
-        int homeOffset = getOffset(binding.spinner2.getSelectedItem().toString());
-        int currentOffset = getOffset(binding.spinner.getSelectedItem().toString());
+        int homeOffset = getOffset(homeOffsetView.getText().toString());
+        int currentOffset = getOffset(currOffsetView.getText().toString());
         int offset = homeOffset - currentOffset;
         String[] time = originalTime.split(":");
         int hour = Integer.parseInt(time[0]);
@@ -183,56 +158,21 @@ public class FirstFragment extends Fragment {
         }
 
 // Format the minute part to ensure it has two digits
-        String formattedMinute = String.format("%02d", minute);
-
-        finalTime = String.format("%d:%s", hour, formattedMinute);
-
-        binding.finalTimeText.setText(finalTime);
-    }
-
-    public Dialog onCreateDialog(Bundle savedInstanceState) {
-        // Use the Builder class for convenient dialog construction.
-        AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
-        builder.setMessage(R.string.select_your_timezone);
-        LayoutInflater inflater = requireActivity().getLayoutInflater();
-      //  binding2.twelveText.addTextChangedListener(textWatcher);
-      //  binding2.zeroText.addTextChangedListener(textWatcher);
-        // Inflate and set the layout for the dialog.
-        // Pass null as the parent view because it's going in the dialog layout.
-
-        builder.setView(inflater.inflate(R.layout.modal_view, null))
-                .setPositiveButton(R.string.start, new DialogInterface.OnClickListener() {
-                    public void onClick(DialogInterface dialog, int id) {
-                        // START THE GAME!
-                        TextView twelveTextView = ((AlertDialog) dialog).findViewById(R.id.twelve_text);
-                        TextView zeroTextView = ((AlertDialog) dialog).findViewById(R.id.zero_text);
-                        Switch amPmSwitch = ((AlertDialog) dialog).findViewById(R.id.amSwitch);
-                        // Get the text from the TextViews
-                        String hour = twelveTextView.getText().toString();
-                        String minute = zeroTextView.getText().toString();
-                        binding.originalTimeButton.setText(twelveTextView.getText() + ":" + zeroTextView.getText() + " " + (amPmSwitch.isChecked() ? "PM" : "AM"));
-
-                    }
-                })
-                .setNegativeButton(R.string.cancel, new DialogInterface.OnClickListener() {
-                    public void onClick(DialogInterface dialog, int id) {
-                        // User cancels the dialog.
-                    }
-                });
-        // Get the layout for the dialog
-
-
-        // Create the AlertDialog object and return it.
-        return builder.create();
+        String formattedMinute = String.format(Locale.US, "%02d", minute);
+        finalTime = String.format(Locale.US, "%d:%s", hour, formattedMinute);
+        TextView timeText = binding.content.findViewById(R.id.converted_time_val);
+        timeText.setText(finalTime);
     }
 
 
-    public void updateGMTText(String item) {
-        binding.gmtCurrentText.setText(getGMTTime(item));
+    public void updateGMTCurrText(String timeZone) {
+        TextView offsetView = binding.content.findViewById(R.id.curr_gmt_offset);
+        offsetView.setText(getGMTTime(timeZone));
     }
 
-    public void updateGMTHomeText(String item) {
-        binding.gmtHomeText.setText(getGMTTime(item));
+    public void updateGMTHomeText(String timeZone) {
+        TextView offsetView =binding.content.findViewById(R.id.home_gmt_offset);
+        offsetView.setText(getGMTTime(timeZone));
     }
 
     private boolean isValidHour(String text) {
@@ -249,39 +189,14 @@ public class FirstFragment extends Fragment {
         // Extract the offset part (e.g., "-05:00")
         String offsetString = parts[1];
         // Remove the ":" from the offset string
-        offsetString = offsetString.replace(":", "");
+        offsetString = offsetString.split(":")[0];
         // Parse the offset string to an integer
-        int offset = Integer.parseInt(offsetString);
-        // Return the offset
-        return offset;
+        return Integer.parseInt(offsetString);
     }
 
     private String getGMTTime(String item) {
         return TimeZoneConverter.convertToGMT(item);
     }
-
-    TextWatcher textWatcher = new TextWatcher() {
-        @Override
-        public void beforeTextChanged(CharSequence s, int start, int count, int after) {
-            // Not needed
-        }
-
-        @Override
-        public void onTextChanged(CharSequence s, int start, int before, int count) {
-            // Not needed
-            if(s.length() == 2) {
-                if (!isValidHour(s.toString())) {
-                    Toast.makeText(getActivity(), "Invalid hour", Toast.LENGTH_SHORT).show();
-                }
-            }
-
-        }
-
-        @Override
-        public void afterTextChanged(Editable s) {
-            // Check if the input has exactly two characters
-        }
-    };
 
     @Override
     public void onDestroyView() {

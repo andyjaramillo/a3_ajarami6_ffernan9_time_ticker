@@ -3,6 +3,7 @@
     <style name="Base.Theme.A3_ajarami6_ffernan9" parent="Theme.Material3.DayNight.NoActionBar">
         <!-- Customize your light theme here. -->
         <!-- <item name="colorPrimary">@color/my_light_primary</item> -->
+        <item name="fontFamily">@font/rubik</item>
     </style>
 
     <style name="Theme.A3_ajarami6_ffernan9" parent="Base.Theme.A3_ajarami6_ffernan9" />

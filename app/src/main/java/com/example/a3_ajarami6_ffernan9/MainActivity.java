@@ -4,14 +4,15 @@ import android.content.Context;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 
-import com.google.android.material.snackbar.Snackbar;
+import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.text.TextUtils;
+import android.util.Log;
 import android.view.View;
 
-import androidx.core.view.WindowCompat;
+import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.navigation.NavController;
 import androidx.navigation.Navigation;
 import androidx.navigation.ui.AppBarConfiguration;
@@ -20,16 +21,18 @@ import androidx.navigation.ui.NavigationUI;
 import com.example.a3_ajarami6_ffernan9.databinding.ActivityMainBinding;
 
 import android.view.Menu;
-import android.view.MenuItem;
+import android.view.animation.AccelerateInterpolator;
 
 public class MainActivity extends AppCompatActivity {
 
-    private AppBarConfiguration appBarConfiguration;
     private ActivityMainBinding binding;
+    private AppBarConfiguration appBarConfiguration;
+    private NavController navController;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        Log.d("app_events", "onCreate");
         SharedPreferences sharedPref = getSharedPreferences("my_preferences", Context.MODE_PRIVATE);
             // Initialize with default values
         String[] defaultArray = {"America/New_York", "America/Los_Angeles", "Europe/Berlin", "Europe/Istanbul", "Asia/Singapore", "Asia/Tokyo", "Australia/Canberra"};
@@ -40,64 +43,77 @@ public class MainActivity extends AppCompatActivity {
 
         binding = ActivityMainBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
+        int mainColor = getResources().getColor(R.color.main_bg_color, null);
+        getWindow().setStatusBarColor(mainColor);
 
-        setSupportActionBar(binding.toolbar);
+        setSupportActionBar(findViewById(R.id.main_toolbar));
 
-//        NavController navController = Navigation.findNavController(this, R.id.nav_host_fragment_content_main);
-//        appBarConfiguration = new AppBarConfiguration.Builder(navController.getGraph()).build();
-//        NavigationUI.setupActionBarWithNavController(this, navController, appBarConfiguration);
-
-        binding.fab.setOnClickListener(new View.OnClickListener() {
+        FloatingActionButton ctaButton = findViewById(R.id.settings_cta);
+        ctaButton.setOnClickListener(new View.OnClickListener() {
             @Override
-            public void onClick(View view) {
-                Snackbar.make(view, "Settings", Snackbar.LENGTH_LONG)
-                        .setAnchorView(R.id.fab)
-                        .setAction("Settings", new View.OnClickListener() {
-                            @Override
-                            public void onClick(View v) {
-                                // Add your action for the Settings button here
-                                // For example, open a new activity or show a dialog
-                                NavController navController = Navigation.findNavController(MainActivity.this, R.id.nav_host_fragment_content_main);
-// Ensure that appBarConfiguration is properly initialized
-                                AppBarConfiguration appBarConfiguration = new AppBarConfiguration.Builder(navController.getGraph()).build();
-// Setup the ActionBar with the Navigation Controller and AppBarConfiguration
-                                NavigationUI.setupActionBarWithNavController(MainActivity.this, navController, appBarConfiguration);
-// Navigate to the desired destination
-                                navController.navigate(R.id.action_FirstFragment_to_SecondFragment);
-
-                            }
-                        }).show();
-
+            public void onClick(View v) {
+                navController = Navigation.findNavController(MainActivity.this, R.id.nav_host_fragment_content_main);
+                // Ensure that appBarConfiguration is properly initialized
+                appBarConfiguration = new AppBarConfiguration.Builder(navController.getGraph()).build();
+                // Setup the ActionBar with the Navigation Controller and AppBarConfiguration
+                NavigationUI.setupActionBarWithNavController(MainActivity.this, navController, appBarConfiguration);
+                // Navigate to the desired destination
+                ConstraintLayout.LayoutParams ctaLayout = (ConstraintLayout.LayoutParams) ctaButton.getLayoutParams();
+                int offset = ctaLayout.bottomMargin + ctaButton.getHeight();
+                ctaButton.animate().translationY(offset).setInterpolator(new AccelerateInterpolator(1.5f)).start();
+                navController.navigate(R.id.action_FirstFragment_to_SecondFragment);
             }
         });
     }
 
     @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        // Inflate the menu; this adds items to the action bar if it is present.
-        getMenuInflater().inflate(R.menu.menu_main, menu);
-        return true;
+    protected void onStart() {
+        super.onStart();
+        Log.d("app_events", "onStart");
     }
 
     @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        // Handle action bar item clicks here. The action bar will
-        // automatically handle clicks on the Home/Up button, so long
-        // as you specify a parent activity in AndroidManifest.xml.
-        int id = item.getItemId();
+    protected void onRestart() {
+        super.onRestart();
+        Log.d("app_events", "onRestart");
+    }
 
-        //noinspection SimplifiableIfStatement
-        if (id == R.id.action_settings) {
-            return true;
-        }
+    @Override
+    protected void onResume() {
+        super.onResume();
+        Log.d("app_events", "onResume");
+    }
 
-        return super.onOptionsItemSelected(item);
+    @Override
+    protected void onPause() {
+        Log.d("app_events", "onPause");
+        super.onPause();
+    }
+
+    @Override
+    protected void onStop() {
+        Log.d("app_events", "onStop");
+        super.onStop();
+    }
+
+    @Override
+    protected void onDestroy() {
+        Log.d("app_events", "onDestroy");
+        super.onDestroy();
+    }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        // No options menu
+        return false;
     }
 
     @Override
     public boolean onSupportNavigateUp() {
-        NavController navController = Navigation.findNavController(this, R.id.nav_host_fragment_content_main);
+        navController = Navigation.findNavController(this, R.id.nav_host_fragment_content_main);
+        FloatingActionButton ctaButton = findViewById(R.id.settings_cta);
+        ctaButton.animate().translationY(0).setInterpolator(new AccelerateInterpolator(1.5f)).start();
         return NavigationUI.navigateUp(navController, appBarConfiguration)
-                || super.onSupportNavigateUp();
+            || super.onSupportNavigateUp();
     }
 }

@@ -8,7 +8,7 @@
     <fragment
         android:id="@+id/FirstFragment"
         android:name="com.example.a3_ajarami6_ffernan9.FirstFragment"
-        android:label="@string/time_zone_header"
+        android:label="@string/main_view_header"
         tools:layout="@layout/fragment_first">
 
         <action
@@ -18,7 +18,7 @@
     <fragment
         android:id="@+id/SecondFragment"
         android:name="com.example.a3_ajarami6_ffernan9.SecondFragment"
-        android:label="@string/second_fragment_label"
+        android:label="@string/settings_view_header"
         tools:layout="@layout/fragment_second">
 
         <action
