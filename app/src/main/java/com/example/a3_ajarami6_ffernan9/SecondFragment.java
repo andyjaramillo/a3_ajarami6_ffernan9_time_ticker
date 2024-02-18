@@ -1,5 +1,8 @@
 package com.example.a3_ajarami6_ffernan9;
 
+import static com.example.a3_ajarami6_ffernan9.MainActivity.attachAdapterToZoneSpinner;
+import static com.example.a3_ajarami6_ffernan9.MainActivity.getGMTOffset;
+
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.os.Bundle;
@@ -9,10 +12,10 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.view.animation.AccelerateInterpolator;
 import android.widget.AdapterView;
-import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.CompoundButton;
 import android.widget.Spinner;
+import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -41,6 +44,8 @@ public class SecondFragment extends Fragment {
     private MaterialSwitch formatToggle;
     private Button saveButton;
 
+    private TextView homeZoneOffset;
+
     @Override
     public View onCreateView(
         @NonNull LayoutInflater inflater, ViewGroup container,
@@ -60,26 +65,20 @@ public class SecondFragment extends Fragment {
         );
 
         // initialize relevant views
-        timeZoneSpinner = binding.content.findViewById(R.id.time_zone_spinner);
-        homeCityInput = binding.content.findViewById(R.id.home_city_edit_field);
-        formatToggle = binding.content.findViewById(R.id.toggle_24h);
-        saveButton = binding.content.findViewById(R.id.save_button);
+        timeZoneSpinner = view.findViewById(R.id.home_time_zone_spinner);
+        homeCityInput = view.findViewById(R.id.home_city_edit_field);
+        formatToggle = view.findViewById(R.id.toggle_24h);
+        saveButton = view.findViewById(R.id.save_button);
+        homeZoneOffset = view.findViewById(R.id.home_gmt_offset);
 
-        loadStateFromPrefs();
+        loadStateFromPrefs(savedInstanceState);
 
-        ArrayAdapter<CharSequence> spinnerAdapter = ArrayAdapter.createFromResource(
-            context,
-            R.array.time_zone_array,
-            R.layout.custom_spinner
-        );
-        spinnerAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-        spinnerAdapter.setNotifyOnChange(true);
-        timeZoneSpinner.setDropDownVerticalOffset(250);
-        timeZoneSpinner.setAdapter(spinnerAdapter);
+        attachAdapterToZoneSpinner(context, timeZoneSpinner);
         timeZoneSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
                 homeTimeZone = parent.getSelectedItem().toString();
+                homeZoneOffset.setText(getGMTOffset(homeTimeZone));
             }
 
             @Override
@@ -88,8 +87,6 @@ public class SecondFragment extends Fragment {
             }
         });
 
-        // TODO: init home city
-        homeCity = "Baltimore";
         homeCityInput.setOnFocusChangeListener(new View.OnFocusChangeListener() {
             @Override
             public void onFocusChange(View v, boolean hasFocus) {
@@ -115,6 +112,7 @@ public class SecondFragment extends Fragment {
                 );
                 SharedPreferences.Editor prefEditor = sharedPref.edit();
                 prefEditor.putBoolean(getString(R.string.format_24h_pref), format24Hr);
+                prefEditor.putString(getString(R.string.home_zone_pref), homeTimeZone);
                 prefEditor.putString(getString(R.string.home_city_pref), homeCity);
                 prefEditor.apply();
 
@@ -133,13 +131,25 @@ public class SecondFragment extends Fragment {
     public void onViewStateRestored(@Nullable Bundle savedInstanceState) {
         super.onViewStateRestored(savedInstanceState);
         hideCTAButton();
-        loadStateFromPrefs();
+        loadStateFromPrefs(savedInstanceState);
     }
 
     @Override
-    public void onStop() {
+    public void onSaveInstanceState(@NonNull Bundle outState) {
+        super.onSaveInstanceState(outState);
 
-        super.onStop();
+        outState.putString(
+            getString(R.string.home_zone_pref),
+            homeTimeZone
+        );
+        outState.putString(
+            getString(R.string.home_city_pref),
+            homeCity
+        );
+        outState.putBoolean(
+            getString(R.string.format_24h_pref),
+            format24Hr
+        );
     }
 
     @Override
@@ -148,22 +158,39 @@ public class SecondFragment extends Fragment {
         binding = null;
     }
 
-    private void loadStateFromPrefs() {
+    private void loadStateFromPrefs(@Nullable Bundle savedInstanceState) {
         String[] zonesArray = getResources().getStringArray(R.array.time_zone_array);
         List<String> timeZones = Arrays.asList(zonesArray);
-        homeTimeZone = sharedPrefs.getString(
-            getString(R.string.home_zone_pref),
-            timeZones.get(0)
-        );
-        homeCity = sharedPrefs.getString(
-            getString(R.string.home_city_pref),
-            "Baltimore"
-        );
-        format24Hr = sharedPrefs.getBoolean(
-            getString(R.string.format_24h_pref),
-            false
-        );
+
+        if (savedInstanceState == null) {
+            homeTimeZone = sharedPrefs.getString(
+                getString(R.string.home_zone_pref),
+                timeZones.get(0)
+            );
+            homeCity = sharedPrefs.getString(
+                getString(R.string.home_city_pref),
+                "Baltimore"
+            );
+            format24Hr = sharedPrefs.getBoolean(
+                getString(R.string.format_24h_pref),
+                false
+            );
+        } else {
+            homeTimeZone = savedInstanceState.getString(
+                getString(R.string.home_zone_pref),
+                timeZones.get(0)
+            );
+            homeCity = savedInstanceState.getString(
+                getString(R.string.home_city_pref),
+                "Baltimore"
+            );
+            format24Hr = savedInstanceState.getBoolean(
+                getString(R.string.format_24h_pref),
+                false
+            );
+        }
         timeZoneSpinner.setSelection(timeZones.indexOf(homeTimeZone));
+        homeZoneOffset.setText(getGMTOffset(homeTimeZone));
         homeCityInput.setText(homeCity);
         formatToggle.setChecked(format24Hr);
     }
@@ -175,5 +202,4 @@ public class SecondFragment extends Fragment {
             .setInterpolator(new AccelerateInterpolator(1.5f))
             .start();
     }
-
 }

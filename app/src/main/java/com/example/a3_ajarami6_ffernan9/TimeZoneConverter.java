@@ -1,5 +1,7 @@
 package com.example.a3_ajarami6_ffernan9;
 
+import androidx.annotation.NonNull;
+
 import java.util.HashMap;
 import java.util.Locale;
 
@@ -18,6 +20,7 @@ public class TimeZoneConverter {
         TIME_ZONES.put("Europe/London", +0);
     }
 
+    @NonNull
     public static String convertToGMT(String timeZone) {
         Integer gmtOffset = TIME_ZONES.get(timeZone);
         if (gmtOffset == null) {

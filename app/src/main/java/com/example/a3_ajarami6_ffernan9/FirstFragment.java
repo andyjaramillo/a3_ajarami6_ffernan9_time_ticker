@@ -1,5 +1,8 @@
 package com.example.a3_ajarami6_ffernan9;
 
+import static com.example.a3_ajarami6_ffernan9.MainActivity.attachAdapterToZoneSpinner;
+import static com.example.a3_ajarami6_ffernan9.MainActivity.getGMTOffset;
+
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.os.Bundle;
@@ -9,7 +12,6 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.view.animation.DecelerateInterpolator;
 import android.widget.AdapterView;
-import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.Spinner;
 import android.widget.TextView;
@@ -67,7 +69,7 @@ public class FirstFragment extends Fragment {
         super.onViewCreated(view, savedInstanceState);
         Context context = requireActivity();
 
-        timeZoneSpinner = view.findViewById(R.id.time_zone_spinner);
+        timeZoneSpinner = view.findViewById(R.id.curr_time_zone_spinner);
         originalTimeView = view.findViewById(R.id.original_time_card);
         convertButton = view.findViewById(R.id.convert_button);
         ctaButton = requireActivity().findViewById(R.id.settings_cta);
@@ -83,15 +85,7 @@ public class FirstFragment extends Fragment {
 
         loadStateFromPrefs();
 
-        ArrayAdapter<CharSequence> spinnerAdapter = ArrayAdapter.createFromResource(
-            context,
-            R.array.time_zone_array,
-            R.layout.custom_spinner
-        );
-
-        spinnerAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-        timeZoneSpinner.setDropDownVerticalOffset(250);
-        timeZoneSpinner.setAdapter(spinnerAdapter);
+        attachAdapterToZoneSpinner(context, timeZoneSpinner);
         timeZoneSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> adapter, View view, int position, long id) {
@@ -268,10 +262,6 @@ public class FirstFragment extends Fragment {
         offsetString = offsetString.split(":")[0];
         // Parse the offset string to an integer
         return Integer.parseInt(offsetString);
-    }
-
-    private String getGMTOffset(String item) {
-        return TimeZoneConverter.convertToGMT(item);
     }
 
     private void showCTAButton() {

@@ -23,6 +23,11 @@ import com.example.a3_ajarami6_ffernan9.databinding.ActivityMainBinding;
 import android.view.Menu;
 import android.view.animation.AccelerateInterpolator;
 import android.view.animation.DecelerateInterpolator;
+import android.widget.ArrayAdapter;
+import android.widget.Spinner;
+
+import java.util.Arrays;
+import java.util.List;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -122,5 +127,20 @@ public class MainActivity extends AppCompatActivity {
         ctaButton.animate().translationY(0).setInterpolator(new DecelerateInterpolator(1f)).start();
         return NavigationUI.navigateUp(navController, appBarConfiguration)
             || super.onSupportNavigateUp();
+    }
+
+    public static void attachAdapterToZoneSpinner(Context context, Spinner timeZoneSpinner) {
+        ArrayAdapter<CharSequence> spinnerAdapter = ArrayAdapter.createFromResource(
+            context,
+            R.array.time_zone_array,
+            R.layout.custom_spinner
+        );
+        spinnerAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        timeZoneSpinner.setDropDownVerticalOffset(250);
+        timeZoneSpinner.setAdapter(spinnerAdapter);
+    }
+
+    public static String getGMTOffset(String item) {
+        return TimeZoneConverter.convertToGMT(item);
     }
 }

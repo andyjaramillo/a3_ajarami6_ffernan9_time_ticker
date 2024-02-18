@@ -98,7 +98,7 @@
                                 style="@style/card_subheader_2" />
 
                         <Spinner
-                                android:id="@+id/time_zone_spinner"
+                                android:id="@+id/curr_time_zone_spinner"
                                 android:background="@null"
                                 android:dropDownWidth="match_parent"
                                 android:popupBackground="@color/main_bg_color"
