@@ -1,5 +1,7 @@
 package com.example.a3_ajarami6_ffernan9;
 
+import static android.content.Context.INPUT_METHOD_SERVICE;
+import static androidx.core.content.ContextCompat.getSystemService;
 import static com.example.a3_ajarami6_ffernan9.MainActivity.attachAdapterToZoneSpinner;
 import static com.example.a3_ajarami6_ffernan9.MainActivity.getGMTOffset;
 
@@ -11,6 +13,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.animation.AccelerateInterpolator;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.AdapterView;
 import android.widget.Button;
 import android.widget.CompoundButton;
@@ -90,10 +93,15 @@ public class SecondFragment extends Fragment {
         homeCityInput.setOnFocusChangeListener(new View.OnFocusChangeListener() {
             @Override
             public void onFocusChange(View v, boolean hasFocus) {
-                Log.d("input_focus", "focus: " + hasFocus);
+                if (!hasFocus) {
+                    InputMethodManager imm = (InputMethodManager) context.getSystemService(INPUT_METHOD_SERVICE);
+                    imm.hideSoftInputFromWindow(v.getWindowToken(), 0);
+                }
             }
         });
+
         // TODO: update home city
+        homeCityInput.setText(sharedPrefs.getString(getString(R.string.home_city_pref), "Baltimore"));
 
         formatToggle.setChecked(format24Hr);
         formatToggle.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
@@ -106,14 +114,11 @@ public class SecondFragment extends Fragment {
         saveButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                SharedPreferences sharedPref = context.getSharedPreferences(
-                    getString(R.string.shared_prefs),
-                    Context.MODE_PRIVATE
-                );
-                SharedPreferences.Editor prefEditor = sharedPref.edit();
+
+                SharedPreferences.Editor prefEditor = sharedPrefs.edit();
                 prefEditor.putBoolean(getString(R.string.format_24h_pref), format24Hr);
                 prefEditor.putString(getString(R.string.home_zone_pref), homeTimeZone);
-                prefEditor.putString(getString(R.string.home_city_pref), homeCity);
+                prefEditor.putString(getString(R.string.home_city_pref), homeCityInput.getText().toString());
                 prefEditor.apply();
 
                 NavController navController = Navigation.findNavController(
