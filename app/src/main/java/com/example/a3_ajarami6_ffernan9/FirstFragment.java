@@ -1,42 +1,63 @@
 package com.example.a3_ajarami6_ffernan9;
 
-import android.app.TimePickerDialog;
 import android.content.Context;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.animation.DecelerateInterpolator;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
+import android.widget.Button;
 import android.widget.Spinner;
 import android.widget.TextView;
-import android.widget.TimePicker;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentManager;
+import androidx.navigation.NavController;
+import androidx.navigation.Navigation;
 
 import com.example.a3_ajarami6_ffernan9.databinding.FragmentFirstBinding;
+import com.google.android.material.floatingactionbutton.FloatingActionButton;
+import com.google.android.material.timepicker.MaterialTimePicker;
+import com.google.android.material.timepicker.TimeFormat;
 
 import java.text.SimpleDateFormat;
+import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.List;
 import java.util.Locale;
 
 public class FirstFragment extends Fragment {
 
     private FragmentFirstBinding binding;
-    private String originalTime = "";
-    private TimePickerDialog originalTimePicker;
+    private SharedPreferences sharedPrefs;
+    private String currentTimeZone;
+    private String originalTime;
+    private String homeTimeZone;
+    private String convertedTime;
     private boolean format24Hr;
+
+    private FloatingActionButton ctaButton;
+    private Spinner timeZoneSpinner;
+    private View originalTimeView;
+    private Button convertButton;
+
+    private TextView currOffsetTxt;
+    private TextView homeZoneText;
+    private TextView homeOffsetTxt;
 
     @Override
     public View onCreateView(
-            LayoutInflater inflater, ViewGroup container,
-            Bundle savedInstanceState
+        @NonNull LayoutInflater inflater, ViewGroup container,
+        Bundle savedInstanceState
     ) {
-
         binding = FragmentFirstBinding.inflate(inflater, container, false);
         return binding.getRoot();
     }
@@ -44,13 +65,23 @@ public class FirstFragment extends Fragment {
 
     public void onViewCreated(@NonNull View view, Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-        Context context = getActivity();
-        assert context != null;
+        Context context = requireActivity();
 
-        format24Hr = false; // TODO: get format setting
-        updateOriginalTimeText();
+        timeZoneSpinner = view.findViewById(R.id.time_zone_spinner);
+        originalTimeView = view.findViewById(R.id.original_time_card);
+        convertButton = view.findViewById(R.id.convert_button);
+        ctaButton = requireActivity().findViewById(R.id.settings_cta);
 
-        Spinner timeZoneSpinner = view.findViewById(R.id.time_zone_spinner);
+        currOffsetTxt = view.findViewById(R.id.curr_gmt_offset);
+        homeZoneText = view.findViewById(R.id.home_zone_name);
+        homeOffsetTxt = view.findViewById(R.id.home_gmt_offset);
+
+        sharedPrefs = context.getSharedPreferences(
+            getString(R.string.shared_prefs),
+            Context.MODE_PRIVATE
+        );
+
+        loadStateFromPrefs();
 
         ArrayAdapter<CharSequence> spinnerAdapter = ArrayAdapter.createFromResource(
             context,
@@ -64,7 +95,7 @@ public class FirstFragment extends Fragment {
         timeZoneSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> adapter, View view, int position, long id) {
-                updateGMTCurrText(adapter.getSelectedItem().toString());
+                updateCurrTimeZone(adapter.getSelectedItem().toString());
             }
 
             @Override
@@ -73,56 +104,101 @@ public class FirstFragment extends Fragment {
             }
         });
 
-        view.findViewById(R.id.original_time_picker).setOnClickListener(new View.OnClickListener() {
+        originalTimeView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                TimePickerDialog.OnTimeSetListener onTimeSetListener = new TimePickerDialog.OnTimeSetListener() {
-                    @Override
-                    public void onTimeSet(TimePicker timePicker, int hour, int minute) {
-                        // TODO: update curr time
-                        Log.d("hour", hour + ":" + minute);
-                    }
-                };
 
                 Calendar cal = Calendar.getInstance();
-                int hour = cal.get(Calendar.HOUR_OF_DAY);
-                int minute = cal.get(Calendar.MINUTE);
-                originalTimePicker = new TimePickerDialog(
-                    context,
-                    onTimeSetListener,
-                    hour,
-                    minute,
-                    format24Hr
-                );
+                MaterialTimePicker timePicker = new MaterialTimePicker.Builder()
+                    .setTheme(R.style.time_picker_theme)
+                    .setInputMode(MaterialTimePicker.INPUT_MODE_CLOCK)
+                    .setTimeFormat(format24Hr ? TimeFormat.CLOCK_24H : TimeFormat.CLOCK_12H)
+                    .setHour(cal.get(Calendar.HOUR_OF_DAY))
+                    .setMinute(cal.get(Calendar.MINUTE))
+                    .build();
 
-                originalTimePicker.show();
+                timePicker.addOnPositiveButtonClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        int hour = timePicker.getHour();
+                        int minute = timePicker.getMinute();
+                        Log.d("hour", hour + ":" + minute);
+                    }
+                });
+
+                FragmentManager manager = requireActivity().getSupportFragmentManager();
+                timePicker.show(manager, "fragment_first");
             }
         });
 
-
-
-        view.findViewById(R.id.convert_button).setOnClickListener(new View.OnClickListener() {
+        convertButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                updateFinalTimeText();
+                updateConvertedTime();
+            }
+        });
+
+        ctaButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                NavController navController = Navigation.findNavController(
+                    requireActivity(),
+                    R.id.nav_host_fragment_content_main
+                );
+                // Navigate to the desired destination
+                navController.navigate(R.id.action_FirstFragment_to_SecondFragment);
             }
         });
     }
 
-    public void onCloseButtonClicked(String buttonText) {
-        // Handle the button close event here
-        originalTime = buttonText;
+    @Override
+    public void onViewStateRestored(@Nullable Bundle savedInstanceState) {
+        super.onViewStateRestored(savedInstanceState);
+        loadStateFromPrefs();
+        showCTAButton();
     }
 
-    private void updateOriginalTimeText() {
+    private void loadStateFromPrefs() {
+        String[] zonesArray = getResources().getStringArray(R.array.time_zone_array);
+        List<String> timeZones = Arrays.asList(zonesArray);
+        format24Hr = sharedPrefs.getBoolean(
+            getString(R.string.format_24h_pref),
+            false
+        );
+        currentTimeZone = sharedPrefs.getString(
+            getString(R.string.curr_zone_pref),
+            timeZones.get(0)
+        );
+        homeTimeZone = sharedPrefs.getString(
+            getString(R.string.home_zone_pref),
+            timeZones.get(1)
+        );
+
+        timeZoneSpinner.setSelection(timeZones.indexOf(currentTimeZone));
+        currOffsetTxt.setText(getGMTOffset(currentTimeZone));
+        homeZoneText.setText(homeTimeZone);
+        homeOffsetTxt.setText(getGMTOffset(homeTimeZone));
+
+        // init curr time
         String timeFormat = format24Hr ? "H:mm" : "h:mm a";
         String currTime = new SimpleDateFormat(timeFormat, Locale.US).format(new Date());
-        TextView orig_time_val = binding.content.findViewById(R.id.original_time_val);
-        orig_time_val.setText(currTime);
+        TextView originalTimeTxt = originalTimeView.findViewById(R.id.original_time_val);
+        originalTimeTxt.setText(currTime);
     }
 
-    private void updateFinalTimeText() {
-        String originalTime = binding.originalTimeVal.getText().toString();
+    private void updateCurrTimeZone(String timeZone) {
+        SharedPreferences.Editor prefEditor = sharedPrefs.edit();
+        prefEditor.putString(
+            getString(R.string.curr_zone_pref),
+            timeZone
+        );
+        currOffsetTxt.setText(getGMTOffset(timeZone));
+        prefEditor.apply();
+    }
+
+    private void updateConvertedTime() {
+        TextView originalTimeTxt = binding.content.findViewById(R.id.original_time_val);
+        String originalTime = originalTimeTxt.getText().toString();
 
         String[] originalTimeParts = originalTime.split(" ");
         String[] hourMinArray = originalTimeParts[0].split(":");
@@ -134,11 +210,11 @@ public class FirstFragment extends Fragment {
             return;
         }
 
-        TextView homeOffsetView = binding.content.findViewById(R.id.home_gmt_offset);
-        TextView currOffsetView = binding.content.findViewById(R.id.curr_gmt_offset);
+        TextView homeOffsetTxt = binding.content.findViewById(R.id.home_gmt_offset);
+        TextView currOffsetTxt= binding.content.findViewById(R.id.curr_gmt_offset);
         String finalTime = "";
-        int homeOffset = getOffset(homeOffsetView.getText().toString());
-        int currentOffset = getOffset(currOffsetView.getText().toString());
+        int homeOffset = getOffset(homeOffsetTxt.getText().toString());
+        int currentOffset = getOffset(currOffsetTxt.getText().toString());
         int offset = homeOffset - currentOffset;
         String[] time = originalTime.split(":");
         int hour = Integer.parseInt(time[0]);
@@ -167,12 +243,12 @@ public class FirstFragment extends Fragment {
 
     public void updateGMTCurrText(String timeZone) {
         TextView offsetView = binding.content.findViewById(R.id.curr_gmt_offset);
-        offsetView.setText(getGMTTime(timeZone));
+        offsetView.setText(getGMTOffset(timeZone));
     }
 
     public void updateGMTHomeText(String timeZone) {
         TextView offsetView =binding.content.findViewById(R.id.home_gmt_offset);
-        offsetView.setText(getGMTTime(timeZone));
+        offsetView.setText(getGMTOffset(timeZone));
     }
 
     private boolean isValidHour(String text) {
@@ -184,8 +260,8 @@ public class FirstFragment extends Fragment {
         }
     }
 
-    private int getOffset(String item) {
-        String[] parts = item.split("\\s+");
+    private int getOffset(String gmtString) {
+        String[] parts = gmtString.split("\\s+");
         // Extract the offset part (e.g., "-05:00")
         String offsetString = parts[1];
         // Remove the ":" from the offset string
@@ -194,8 +270,15 @@ public class FirstFragment extends Fragment {
         return Integer.parseInt(offsetString);
     }
 
-    private String getGMTTime(String item) {
+    private String getGMTOffset(String item) {
         return TimeZoneConverter.convertToGMT(item);
+    }
+
+    private void showCTAButton() {
+        ctaButton.animate()
+            .translationY(0)
+            .setInterpolator(new DecelerateInterpolator(1f))
+            .start();
     }
 
     @Override

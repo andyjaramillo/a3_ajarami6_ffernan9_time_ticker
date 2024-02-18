@@ -22,10 +22,10 @@ import com.example.a3_ajarami6_ffernan9.databinding.ActivityMainBinding;
 
 import android.view.Menu;
 import android.view.animation.AccelerateInterpolator;
+import android.view.animation.DecelerateInterpolator;
 
 public class MainActivity extends AppCompatActivity {
 
-    private ActivityMainBinding binding;
     private AppBarConfiguration appBarConfiguration;
     private NavController navController;
 
@@ -33,43 +33,50 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         Log.d("app_events", "onCreate");
+
         SharedPreferences sharedPref = getSharedPreferences("my_preferences", Context.MODE_PRIVATE);
-            // Initialize with default values
-        String[] defaultArray = {"America/New_York", "America/Los_Angeles", "Europe/Berlin", "Europe/Istanbul", "Asia/Singapore", "Asia/Tokyo", "Australia/Canberra"};
+        // Initialize with default values
+        String[] defaultArray = {
+            "America/New_York",
+            "America/Los_Angeles",
+            "Europe/Berlin",
+            "Europe/Istanbul",
+            "Asia/Singapore",
+            "Asia/Tokyo",
+            "Australia/Canberra"
+        };
         String jsonArray = TextUtils.join(",", defaultArray);
         SharedPreferences.Editor editor = sharedPref.edit();
         editor.putString("personal_timezone", jsonArray);
         editor.apply();
 
-        binding = ActivityMainBinding.inflate(getLayoutInflater());
-        setContentView(binding.getRoot());
+        ActivityMainBinding binding = ActivityMainBinding.inflate(getLayoutInflater());
         int mainColor = getResources().getColor(R.color.main_bg_color, null);
         getWindow().setStatusBarColor(mainColor);
+        setContentView(binding.getRoot());
 
         setSupportActionBar(findViewById(R.id.main_toolbar));
-
-        FloatingActionButton ctaButton = findViewById(R.id.settings_cta);
-        ctaButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                navController = Navigation.findNavController(MainActivity.this, R.id.nav_host_fragment_content_main);
-                // Ensure that appBarConfiguration is properly initialized
-                appBarConfiguration = new AppBarConfiguration.Builder(navController.getGraph()).build();
-                // Setup the ActionBar with the Navigation Controller and AppBarConfiguration
-                NavigationUI.setupActionBarWithNavController(MainActivity.this, navController, appBarConfiguration);
-                // Navigate to the desired destination
-                ConstraintLayout.LayoutParams ctaLayout = (ConstraintLayout.LayoutParams) ctaButton.getLayoutParams();
-                int offset = ctaLayout.bottomMargin + ctaButton.getHeight();
-                ctaButton.animate().translationY(offset).setInterpolator(new AccelerateInterpolator(1.5f)).start();
-                navController.navigate(R.id.action_FirstFragment_to_SecondFragment);
-            }
-        });
     }
 
     @Override
     protected void onStart() {
         super.onStart();
         Log.d("app_events", "onStart");
+
+        navController = Navigation.findNavController(
+            this,
+            R.id.nav_host_fragment_content_main
+        );
+        // Ensure that appBarConfiguration is properly initialized
+        appBarConfiguration = new AppBarConfiguration.Builder(
+            navController.getGraph()
+        ).build();
+        // Setup the ActionBar with the Navigation Controller and AppBarConfiguration
+        NavigationUI.setupActionBarWithNavController(
+            this,
+            navController,
+            appBarConfiguration
+        );
     }
 
     @Override
@@ -112,7 +119,7 @@ public class MainActivity extends AppCompatActivity {
     public boolean onSupportNavigateUp() {
         navController = Navigation.findNavController(this, R.id.nav_host_fragment_content_main);
         FloatingActionButton ctaButton = findViewById(R.id.settings_cta);
-        ctaButton.animate().translationY(0).setInterpolator(new AccelerateInterpolator(1.5f)).start();
+        ctaButton.animate().translationY(0).setInterpolator(new DecelerateInterpolator(1f)).start();
         return NavigationUI.navigateUp(navController, appBarConfiguration)
             || super.onSupportNavigateUp();
     }

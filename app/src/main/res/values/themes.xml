@@ -1,10 +1,72 @@
-<resources xmlns:tools="http://schemas.android.com/tools">
-    <!-- Base application theme. -->
+<resources>
+
     <style name="Base.Theme.A3_ajarami6_ffernan9" parent="Theme.Material3.DayNight.NoActionBar">
-        <!-- Customize your light theme here. -->
-        <!-- <item name="colorPrimary">@color/my_light_primary</item> -->
         <item name="fontFamily">@font/rubik</item>
     </style>
 
+    <style name="time_picker_theme" parent="ThemeOverlay.MaterialComponents.TimePicker">
+        <item name="android:textColor">@color/main_text_color</item>
+        <item name="colorControlActivated">@color/main_bg_color</item>
+        <item name="colorPrimary">@color/colorPrimary</item>
+        <item name="colorSurface">@color/main_bg_color</item>
+        <item name="fontFamily">@font/rubik</item>
+
+        <item name="clockFaceBackgroundColor">@macro/m3_comp_time_picker_clock_dial_color</item>
+        <item name="clockHandColor">@macro/m3_comp_time_picker_clock_dial_selector_handle_container_color</item>
+        <item name="clockNumberTextColor">@color/sub_text_color</item>
+    </style>
+
+    <style name="material_toggle" parent="Widget.Material3.CompoundButton.MaterialSwitch">
+        <item name="android:textColor">@color/sub_text_color</item>
+        <item name="android:textSize">18sp</item>
+        <item name="android:fontFamily">@font/rubik</item>
+        <item name="fontFamily">@font/rubik</item>
+        <item name="android:textFontWeight">500</item>
+        <item name="fontWeight">500</item>
+        <item name="maxLines">1</item>
+        <!-- Customize switch track color -->
+        <!-- Customize switch thumb color -->
+        <item name="thumbTint">@color/switch_thumb_tint</item>
+        <item name="trackTint">@color/switch_track_tint</item>
+        <item name="trackDecorationTint">@color/colorPrimary</item>
+    </style>
+
+    <style name="card_main_text">
+        <item name="android:textColor">@color/main_text_color</item>
+        <item name="fontFamily">@font/rubik</item>
+        <item name="android:textSize">25sp</item>
+        <item name="fontWeight">500</item>
+        <item name="maxLines">1</item>
+    </style>
+
+    <style name="card_subheader_1">
+        <item name="android:textColor">@color/sub_text_color</item>
+        <item name="android:textSize">16sp</item>
+        <item name="android:fontFamily">@font/rubik</item>
+        <item name="fontFamily">@font/rubik</item>
+        <item name="android:textFontWeight">500</item>
+        <item name="fontWeight">500</item>
+        <item name="maxLines">1</item>
+    </style>
+
+    <style name="card_subheader_2">
+        <item name="android:textColor">@color/sub_text_color</item>
+        <item name="fontFamily">@font/rubik</item>
+        <item name="android:textSize">14sp</item>
+        <item name="android:textFontWeight">700</item>
+        <item name="fontWeight">700</item>
+        <item name="maxLines">1</item>
+    </style>
+
+    <style name="value_card_main_text">
+        <item name="android:textColor">@color/main_text_color</item>
+        <item name="fontFamily">@font/rubik</item>
+        <item name="android:textSize">25sp</item>
+        <item name="android:textFontWeight">800</item>
+        <item name="fontWeight">800</item>
+        <item name="maxLines">1</item>
+    </style>
+
     <style name="Theme.A3_ajarami6_ffernan9" parent="Base.Theme.A3_ajarami6_ffernan9" />
+
 </resources>

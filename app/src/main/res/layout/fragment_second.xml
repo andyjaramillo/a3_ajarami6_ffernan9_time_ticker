@@ -6,7 +6,7 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         tools:context=".FirstFragment"
-        android:foregroundTint="@color/zone_name_color"
+        android:foregroundTint="@color/main_text_color"
         android:background="@color/main_bg_color">
 
     <RelativeLayout
@@ -29,7 +29,7 @@
                 android:overScrollMode="always">
 
             <androidx.cardview.widget.CardView
-                    android:id="@+id/home_zone_group"
+                    android:id="@+id/home_prefs_group"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     app:layout_constraintTop_toTopOf="parent"
@@ -57,37 +57,49 @@
 
                         <TextView
                                 android:id="@+id/home_zone_type"
-                                android:textSize="14sp"
-                                android:textColor="@color/zone_type_color"
                                 android:layout_width="match_parent"
                                 android:layout_height="wrap_content"
-                                android:text="@string/curr_zone_header"
+                                android:text="@string/home_zone_header"
                                 android:maxLines="1"
                                 app:layout_constraintTop_toTopOf="parent"
                                 app:layout_constraintEnd_toEndOf="parent"
                                 app:layout_constraintStart_toStartOf="parent"
                                 android:layout_marginStart="15dp"
                                 android:layout_marginEnd="15dp"
-                                android:layout_marginTop="15dp" />
+                                android:layout_marginTop="15dp"
+                                style="@style/card_subheader_1" />
 
                         <TextView
+                                android:id="@+id/home_zone_name"
+                                android:textColor="@color/main_text_color"
+                                android:layout_marginStart="15dp"
+                                android:layout_marginTop="15dp"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:maxLines="1"
+                                app:layout_constraintStart_toStartOf="parent"
+                                app:layout_constraintTop_toBottomOf="@+id/home_zone_type"
+                                app:layout_constraintEnd_toEndOf="parent"
+                                android:layout_marginEnd="15dp"
+                                android:visibility="invisible"
+                                style="@style/card_main_text" />
+
+                        <TextView
+                                app:fontWeight="700"
                                 android:id="@+id/home_gmt_offset"
-                                android:textSize="14sp"
-                                android:textColor="@color/zone_type_color"
                                 android:layout_height="wrap_content"
                                 android:text="@string/gmt_offset_string"
                                 app:layout_constraintBottom_toBottomOf="parent"
                                 app:layout_constraintStart_toStartOf="parent"
                                 android:layout_marginStart="15dp"
                                 android:layout_width="0dp"
-                                app:layout_constraintTop_toBottomOf="@+id/home_zone_type"
-                                android:layout_marginTop="60dp"
+                                app:layout_constraintTop_toBottomOf="@+id/home_zone_name"
                                 android:layout_marginBottom="10dp"
-                                android:textStyle="bold" />
+                                style="@style/card_subheader_2"
+                                android:layout_marginTop="15dp" />
 
                         <Spinner
                                 android:id="@+id/time_zone_spinner"
-                                android:padding="6dip"
                                 android:background="@null"
                                 android:dropDownWidth="match_parent"
                                 android:popupBackground="@color/main_bg_color"
@@ -96,7 +108,10 @@
                                 app:layout_constraintStart_toStartOf="parent"
                                 app:layout_constraintEnd_toEndOf="parent"
                                 android:layout_width="match_parent"
-                                android:layout_height="0dp" />
+                                android:layout_height="0dp"
+                                android:paddingTop="10dip"
+                                android:paddingStart="6dip"
+                                android:paddingEnd="6dip" />
 
                     </androidx.constraintlayout.widget.ConstraintLayout>
 
@@ -112,8 +127,6 @@
 
                         <TextView
                                 android:id="@+id/home_city_header"
-                                android:textSize="14sp"
-                                android:textColor="@color/zone_type_color"
                                 android:layout_marginStart="15dp"
                                 android:layout_marginTop="10dp"
                                 android:layout_width="match_parent"
@@ -122,14 +135,13 @@
                                 android:layout_marginEnd="15dp"
                                 app:layout_constraintTop_toTopOf="parent"
                                 app:layout_constraintStart_toStartOf="parent"
-                                app:layout_constraintEnd_toEndOf="parent" />
+                                app:layout_constraintEnd_toEndOf="parent"
+                                style="@style/card_subheader_1" />
 
                         <com.google.android.material.textfield.TextInputEditText
                                 android:id="@+id/home_city_edit_field"
                                 android:layout_gravity="center_horizontal|center"
                                 android:gravity="center"
-                                android:textSize="25sp"
-                                android:textColor="@color/zone_name_color"
                                 android:layout_marginStart="15dp"
                                 android:layout_width="match_parent"
                                 android:layout_height="wrap_content"
@@ -139,9 +151,13 @@
                                 android:layout_marginEnd="15dp"
                                 app:layout_constraintBottom_toBottomOf="parent"
                                 app:layout_constraintVertical_bias="0.65"
-                                android:textStyle="bold"
                                 app:layout_constraintTop_toBottomOf="@+id/home_city_header"
-                                android:layout_marginBottom="10dp" />
+                                android:layout_marginBottom="10dp"
+                                style="@style/value_card_main_text"
+                                android:backgroundTint="@color/sub_text_color"
+                                android:textColorHighlight="@color/colorPrimary"
+                                android:textColorLink="@color/colorAccent"
+                                android:foregroundTint="@color/sub_text_color" />
 
 
                     </androidx.constraintlayout.widget.ConstraintLayout>
@@ -149,16 +165,52 @@
                 </RelativeLayout>
             </androidx.cardview.widget.CardView>
 
+            <androidx.cardview.widget.CardView
+                    android:id="@+id/toggle_card"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintTop_toBottomOf="@id/home_prefs_group"
+                    app:cardBackgroundColor="@color/main_bg_color"
+                    app:cardCornerRadius="20dp"
+                    app:cardElevation="0dp"
+                    android:layout_marginTop="20dp">
+
+                <androidx.constraintlayout.widget.ConstraintLayout
+                        android:background="@drawable/round_card_section"
+                        android:layout_marginTop="0dp"
+                        android:layout_marginStart="0dp"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content">
+
+                    <com.google.android.material.materialswitch.MaterialSwitch
+                            android:id="@+id/toggle_24h"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            app:layout_constraintEnd_toEndOf="parent"
+                            app:layout_constraintTop_toTopOf="parent"
+                            android:layout_marginTop="10dp"
+                            android:layout_marginEnd="25dp"
+                            app:layout_constraintBottom_toBottomOf="parent"
+                            android:layout_marginBottom="10dp"
+                            android:text="@string/toggle_24h_label"
+                            app:layout_constraintStart_toStartOf="parent"
+                            android:layout_marginStart="15dp"
+                            style="@style/material_toggle" />
+
+                </androidx.constraintlayout.widget.ConstraintLayout>
+
+            </androidx.cardview.widget.CardView>
+
             <Button
                     android:id="@+id/save_button"
+                    android:text="@string/save_button_label"
                     android:contentDescription="@string/save_description"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="@string/save_button_label"
-                    android:textSize="30sp"
-                    android:backgroundTint="@color/_bg__settingscta_ek1_color"
-                    app:iconTint="@color/zone_name_color"
-                    android:textColor="@color/zone_name_color"
+                    android:backgroundTint="@color/bg_action_button"
+                    app:iconTint="@color/main_text_color"
                     app:cornerRadius="20dp"
                     android:layout_marginTop="30dp"
                     app:iconPadding="20dp"
@@ -169,10 +221,11 @@
                     android:paddingTop="15dp"
                     android:paddingBottom="15dp"
                     app:layout_constraintBottom_toBottomOf="parent"
-                    app:layout_constraintTop_toBottomOf="@+id/home_zone_group"
+                    app:layout_constraintTop_toBottomOf="@+id/toggle_card"
                     app:layout_constraintLeft_toLeftOf="parent"
                     app:layout_constraintRight_toRightOf="parent"
-                    android:includeFontPadding="false" />
+                    android:includeFontPadding="false"
+                    style="@style/value_card_main_text" />
 
         </androidx.constraintlayout.widget.ConstraintLayout>
 
