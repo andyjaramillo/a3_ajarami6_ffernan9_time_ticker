@@ -3,31 +3,22 @@ package com.example.a3_ajarami6_ffernan9;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.os.Bundle;
-
-import com.google.android.material.floatingactionbutton.FloatingActionButton;
-
-import androidx.appcompat.app.AppCompatActivity;
-
 import android.text.TextUtils;
 import android.util.Log;
-import android.view.View;
+import android.util.TypedValue;
+import android.view.Menu;
+import android.view.animation.DecelerateInterpolator;
+import android.widget.ArrayAdapter;
+import android.widget.Spinner;
 
-import androidx.constraintlayout.widget.ConstraintLayout;
+import androidx.appcompat.app.AppCompatActivity;
 import androidx.navigation.NavController;
 import androidx.navigation.Navigation;
 import androidx.navigation.ui.AppBarConfiguration;
 import androidx.navigation.ui.NavigationUI;
 
 import com.example.a3_ajarami6_ffernan9.databinding.ActivityMainBinding;
-
-import android.view.Menu;
-import android.view.animation.AccelerateInterpolator;
-import android.view.animation.DecelerateInterpolator;
-import android.widget.ArrayAdapter;
-import android.widget.Spinner;
-
-import java.util.Arrays;
-import java.util.List;
+import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -37,23 +28,6 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        Log.d("app_events", "onCreate");
-
-        SharedPreferences sharedPref = getSharedPreferences("my_preferences", Context.MODE_PRIVATE);
-        // Initialize with default values
-        String[] defaultArray = {
-            "America/New_York",
-            "America/Los_Angeles",
-            "Europe/Berlin",
-            "Europe/Istanbul",
-            "Asia/Singapore",
-            "Asia/Tokyo",
-            "Australia/Canberra"
-        };
-        String jsonArray = TextUtils.join(",", defaultArray);
-        SharedPreferences.Editor editor = sharedPref.edit();
-        editor.putString("personal_timezone", jsonArray);
-        editor.apply();
 
         ActivityMainBinding binding = ActivityMainBinding.inflate(getLayoutInflater());
         int mainColor = getResources().getColor(R.color.main_bg_color, null);
@@ -66,7 +40,6 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onStart() {
         super.onStart();
-        Log.d("app_events", "onStart");
 
         navController = Navigation.findNavController(
             this,
@@ -82,36 +55,6 @@ public class MainActivity extends AppCompatActivity {
             navController,
             appBarConfiguration
         );
-    }
-
-    @Override
-    protected void onRestart() {
-        super.onRestart();
-        Log.d("app_events", "onRestart");
-    }
-
-    @Override
-    protected void onResume() {
-        super.onResume();
-        Log.d("app_events", "onResume");
-    }
-
-    @Override
-    protected void onPause() {
-        Log.d("app_events", "onPause");
-        super.onPause();
-    }
-
-    @Override
-    protected void onStop() {
-        Log.d("app_events", "onStop");
-        super.onStop();
-    }
-
-    @Override
-    protected void onDestroy() {
-        Log.d("app_events", "onDestroy");
-        super.onDestroy();
     }
 
     @Override
@@ -135,12 +78,12 @@ public class MainActivity extends AppCompatActivity {
             R.array.time_zone_array,
             R.layout.custom_spinner
         );
-        spinnerAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-        timeZoneSpinner.setDropDownVerticalOffset(250);
+        spinnerAdapter.setDropDownViewResource(R.layout.custom_spinner_list_item);
+        timeZoneSpinner.setDropDownVerticalOffset((int) TypedValue.applyDimension(
+            TypedValue.COMPLEX_UNIT_DIP,
+            5f,
+            context.getResources().getDisplayMetrics()
+        ));
         timeZoneSpinner.setAdapter(spinnerAdapter);
-    }
-
-    public static String getGMTOffset(String item) {
-        return TimeZoneConverter.convertToGMT(item);
     }
 }

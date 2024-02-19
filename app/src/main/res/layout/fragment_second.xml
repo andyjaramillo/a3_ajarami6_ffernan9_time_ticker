@@ -76,7 +76,7 @@
                                 android:id="@+id/home_zone_name"
                                 android:textColor="@color/main_text_color"
                                 android:layout_marginStart="15dp"
-                                android:layout_marginTop="15dp"
+                                android:layout_marginTop="10dp"
                                 android:layout_width="match_parent"
                                 android:layout_height="wrap_content"
                                 android:maxLines="1"
@@ -99,22 +99,21 @@
                                 app:layout_constraintTop_toBottomOf="@+id/home_zone_name"
                                 android:layout_marginBottom="10dp"
                                 style="@style/card_subheader_2"
-                                android:layout_marginTop="15dp" />
+                                android:layout_marginTop="20dp" />
 
                         <Spinner
                                 android:id="@+id/home_time_zone_spinner"
                                 android:background="@null"
                                 android:dropDownWidth="match_parent"
-                                android:popupBackground="@color/main_bg_color"
+                                android:popupBackground="@drawable/round_card_section"
                                 app:layout_constraintBottom_toBottomOf="parent"
                                 app:layout_constraintTop_toTopOf="parent"
                                 app:layout_constraintStart_toStartOf="parent"
                                 app:layout_constraintEnd_toEndOf="parent"
+                                android:overlapAnchor="false"
                                 android:layout_width="match_parent"
                                 android:layout_height="0dp"
-                                android:paddingTop="10dip"
-                                android:paddingStart="6dip"
-                                android:paddingEnd="6dip" />
+                                android:paddingBottom="5dip" />
 
                     </androidx.constraintlayout.widget.ConstraintLayout>
 
@@ -141,14 +140,11 @@
                                 app:layout_constraintEnd_toEndOf="parent"
                                 style="@style/card_subheader_1" />
 
-                        <com.google.android.material.textfield.TextInputEditText
-                                android:id="@+id/home_city_edit_field"
+                        <com.google.android.material.textfield.TextInputLayout
                                 android:layout_gravity="center_horizontal|center"
-                                android:gravity="center"
                                 android:layout_marginStart="15dp"
                                 android:layout_width="match_parent"
                                 android:layout_height="wrap_content"
-                                android:text="@string/home_city_input"
                                 app:layout_constraintStart_toStartOf="parent"
                                 app:layout_constraintEnd_toEndOf="parent"
                                 android:layout_marginEnd="15dp"
@@ -156,12 +152,41 @@
                                 app:layout_constraintVertical_bias="0.65"
                                 app:layout_constraintTop_toBottomOf="@+id/home_city_header"
                                 android:layout_marginBottom="10dp"
-                                style="@style/value_card_main_text"
                                 android:backgroundTint="@color/sub_text_color"
                                 android:textColorHighlight="@color/colorPrimary"
                                 android:textColorLink="@color/colorAccent"
-                                android:foregroundTint="@color/sub_text_color" />
+                                android:foregroundTint="@color/sub_text_color"
+                                android:textColorHint="@null"
+                                app:boxBackgroundMode="none"
+                                app:hintEnabled="false"
+                                android:id="@+id/textInputLayout">
 
+                            <com.google.android.material.textfield.TextInputEditText
+                                    android:id="@+id/home_city_edit_field"
+                                    android:layout_width="match_parent"
+                                    android:layout_height="wrap_content"
+                                    style="@style/value_card_main_text"
+                                    android:text="@string/home_city_input"
+                                    android:gravity="center"
+                                    android:maxLines="1"
+                                    android:singleLine="true"
+                                    android:inputType="text"
+                                    android:lines="1"
+                                    android:padding="10dip" />
+
+                        </com.google.android.material.textfield.TextInputLayout>
+
+                        <com.google.android.material.divider.MaterialDivider
+                                android:layout_width="0dp"
+                                android:layout_height="3dp"
+                                app:layout_constraintBottom_toBottomOf="@+id/textInputLayout"
+                                app:layout_constraintStart_toStartOf="@+id/textInputLayout"
+                                app:layout_constraintEnd_toEndOf="@+id/textInputLayout"
+                                android:layout_marginBottom="5dp"
+                                app:dividerColor="@color/sub_text_color"
+                                android:alpha="0.6"
+                                android:layout_marginStart="10dp"
+                                android:layout_marginEnd="10dp" />
 
                     </androidx.constraintlayout.widget.ConstraintLayout>
 

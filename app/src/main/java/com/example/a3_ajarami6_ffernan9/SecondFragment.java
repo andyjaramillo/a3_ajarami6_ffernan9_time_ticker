@@ -1,14 +1,12 @@
 package com.example.a3_ajarami6_ffernan9;
 
 import static android.content.Context.INPUT_METHOD_SERVICE;
-import static androidx.core.content.ContextCompat.getSystemService;
 import static com.example.a3_ajarami6_ffernan9.MainActivity.attachAdapterToZoneSpinner;
-import static com.example.a3_ajarami6_ffernan9.MainActivity.getGMTOffset;
+import static com.example.a3_ajarami6_ffernan9.TimeZoneConverter.getGMTOffsetString;
 
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -16,7 +14,6 @@ import android.view.animation.AccelerateInterpolator;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.AdapterView;
 import android.widget.Button;
-import android.widget.CompoundButton;
 import android.widget.Spinner;
 import android.widget.TextView;
 
@@ -33,6 +30,7 @@ import com.google.android.material.textfield.TextInputEditText;
 
 import java.util.Arrays;
 import java.util.List;
+import java.util.Objects;
 
 public class SecondFragment extends Fragment {
 
@@ -45,7 +43,6 @@ public class SecondFragment extends Fragment {
     private Spinner timeZoneSpinner;
     private TextInputEditText homeCityInput;
     private MaterialSwitch formatToggle;
-    private Button saveButton;
 
     private TextView homeZoneOffset;
 
@@ -70,9 +67,8 @@ public class SecondFragment extends Fragment {
         // initialize relevant views
         timeZoneSpinner = view.findViewById(R.id.home_time_zone_spinner);
         homeCityInput = view.findViewById(R.id.home_city_edit_field);
-        formatToggle = view.findViewById(R.id.toggle_24h);
-        saveButton = view.findViewById(R.id.save_button);
         homeZoneOffset = view.findViewById(R.id.home_gmt_offset);
+        formatToggle = view.findViewById(R.id.toggle_24h);
 
         loadStateFromPrefs(savedInstanceState);
 
@@ -81,7 +77,7 @@ public class SecondFragment extends Fragment {
             @Override
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
                 homeTimeZone = parent.getSelectedItem().toString();
-                homeZoneOffset.setText(getGMTOffset(homeTimeZone));
+                homeZoneOffset.setText(getGMTOffsetString(homeTimeZone));
             }
 
             @Override
@@ -90,43 +86,19 @@ public class SecondFragment extends Fragment {
             }
         });
 
-        homeCityInput.setOnFocusChangeListener(new View.OnFocusChangeListener() {
-            @Override
-            public void onFocusChange(View v, boolean hasFocus) {
-                if (!hasFocus) {
-                    InputMethodManager imm = (InputMethodManager) context.getSystemService(INPUT_METHOD_SERVICE);
-                    imm.hideSoftInputFromWindow(v.getWindowToken(), 0);
-                }
+        homeCityInput.setOnFocusChangeListener((v, hasFocus) -> {
+            if (!hasFocus) {
+                InputMethodManager imm = (InputMethodManager) context.getSystemService(INPUT_METHOD_SERVICE);
+                imm.hideSoftInputFromWindow(v.getWindowToken(), 0);
             }
         });
 
-        // TODO: update home city
-        homeCityInput.setText(sharedPrefs.getString(getString(R.string.home_city_pref), "Baltimore"));
+        formatToggle.setOnCheckedChangeListener((buttonView, isChecked) -> format24Hr = isChecked);
 
-        formatToggle.setChecked(format24Hr);
-        formatToggle.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
-            @Override
-            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-                format24Hr = isChecked;
-            }
-        });
-
-        saveButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-
-                SharedPreferences.Editor prefEditor = sharedPrefs.edit();
-                prefEditor.putBoolean(getString(R.string.format_24h_pref), format24Hr);
-                prefEditor.putString(getString(R.string.home_zone_pref), homeTimeZone);
-                prefEditor.putString(getString(R.string.home_city_pref), homeCityInput.getText().toString());
-                prefEditor.apply();
-
-                NavController navController = Navigation.findNavController(
-                    requireActivity(),
-                    R.id.nav_host_fragment_content_main
-                );
-                navController.navigate(R.id.action_SecondFragment_to_FirstFragment);
-            }
+        Button saveButton = view.findViewById(R.id.save_button);
+        saveButton.setOnClickListener((view1) -> {
+            homeCity = Objects.requireNonNull(homeCityInput.getText()).toString();
+            saveSettings();
         });
 
         hideCTAButton();
@@ -142,19 +114,9 @@ public class SecondFragment extends Fragment {
     @Override
     public void onSaveInstanceState(@NonNull Bundle outState) {
         super.onSaveInstanceState(outState);
-
-        outState.putString(
-            getString(R.string.home_zone_pref),
-            homeTimeZone
-        );
-        outState.putString(
-            getString(R.string.home_city_pref),
-            homeCity
-        );
-        outState.putBoolean(
-            getString(R.string.format_24h_pref),
-            format24Hr
-        );
+        outState.putString(getString(R.string.home_zone_pref), homeTimeZone);
+        outState.putString(getString(R.string.home_city_pref), homeCity);
+        outState.putBoolean(getString(R.string.format_24h_pref), format24Hr);
     }
 
     @Override
@@ -195,9 +157,27 @@ public class SecondFragment extends Fragment {
             );
         }
         timeZoneSpinner.setSelection(timeZones.indexOf(homeTimeZone));
-        homeZoneOffset.setText(getGMTOffset(homeTimeZone));
+        homeZoneOffset.setText(getGMTOffsetString(homeTimeZone));
         homeCityInput.setText(homeCity);
         formatToggle.setChecked(format24Hr);
+    }
+
+    private void saveSettings() {
+        SharedPreferences sharedPref = requireContext().getSharedPreferences(
+            getString(R.string.shared_prefs),
+            Context.MODE_PRIVATE
+        );
+        SharedPreferences.Editor prefEditor = sharedPref.edit();
+        prefEditor.putBoolean(getString(R.string.format_24h_pref), format24Hr);
+        prefEditor.putString(getString(R.string.home_zone_pref), homeTimeZone);
+        prefEditor.putString(getString(R.string.home_city_pref), homeCity);
+        prefEditor.apply();
+
+        NavController navController = Navigation.findNavController(
+            requireActivity(),
+            R.id.nav_host_fragment_content_main
+        );
+        navController.navigate(R.id.action_SecondFragment_to_FirstFragment);
     }
 
     private void hideCTAButton() {

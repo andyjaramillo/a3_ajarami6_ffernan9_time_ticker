@@ -24,7 +24,7 @@
     <string name="home_zone_name_string">America/Los_Angeles</string>
     <string name="home_gmt_offset_string">GMT -08:00</string>
     <string name="converted_time_header_string">Converted Time</string>
-    <string name="converted_time_string">7:37 AM</string>
+    <string name="converted_time_string">--:--</string>
     <string name="convert_button_label">Convert</string>
     <string name="home_city_header">Home City</string>
     <string name="home_city_input">Baltimore</string>
@@ -43,4 +43,7 @@
     <string name="conv_time_pref">converted_time</string>
     <string name="format_24h_pref">format_is_24h</string>
     <string name="home_city_pref">home_city</string>
+    <string name="next_day_string">(+1 day)</string>
+    <string name="prev_day_string">(-1 day)</string>
+    <string name="dnd_alert_string">Do Not Disturb Hours (11pm to 7am)</string>
 </resources>

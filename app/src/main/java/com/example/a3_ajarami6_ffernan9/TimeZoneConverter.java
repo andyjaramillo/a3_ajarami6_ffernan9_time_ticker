@@ -20,8 +20,12 @@ public class TimeZoneConverter {
         TIME_ZONES.put("Europe/London", +0);
     }
 
+    public static Integer getGMTOffset(String timeZone) {
+        return TIME_ZONES.get(timeZone);
+    }
+
     @NonNull
-    public static String convertToGMT(String timeZone) {
+    public static String getGMTOffsetString(String timeZone) {
         Integer gmtOffset = TIME_ZONES.get(timeZone);
         if (gmtOffset == null) {
             return "Unknown";

@@ -6,4 +6,4 @@
         android:layout_height="match_parent"
         app:drawableRightCompat="@drawable/arrow_drop_down"
         android:gravity="center_vertical"
-        android:padding="9dp" />
+        android:padding="15dp" />

@@ -8,7 +8,9 @@
         tools:context=".FirstFragment"
         android:foregroundTint="@color/main_text_color"
         android:background="@color/main_bg_color"
-        style="@style/Theme.A3_ajarami6_ffernan9">
+        style="@style/Theme.A3_ajarami6_ffernan9"
+        android:isScrollContainer="true"
+        app:layout_scrollEffect="compress">
 
     <RelativeLayout
             android:id="@+id/content_container"
@@ -73,7 +75,7 @@
                                 android:id="@+id/curr_zone_name"
                                 android:textColor="@color/main_text_color"
                                 android:layout_marginStart="15dp"
-                                android:layout_marginTop="15dp"
+                                android:layout_marginTop="10dp"
                                 android:layout_width="match_parent"
                                 android:layout_height="wrap_content"
                                 android:maxLines="1"
@@ -93,7 +95,7 @@
                                 android:layout_marginStart="15dp"
                                 android:layout_width="0dp"
                                 app:layout_constraintTop_toBottomOf="@+id/curr_zone_name"
-                                android:layout_marginTop="15dp"
+                                android:layout_marginTop="20dp"
                                 android:layout_marginBottom="10dp"
                                 style="@style/card_subheader_2" />
 
@@ -101,16 +103,15 @@
                                 android:id="@+id/curr_time_zone_spinner"
                                 android:background="@null"
                                 android:dropDownWidth="match_parent"
-                                android:popupBackground="@color/main_bg_color"
+                                android:popupBackground="@drawable/round_card_section"
                                 app:layout_constraintBottom_toBottomOf="parent"
                                 app:layout_constraintTop_toTopOf="parent"
                                 app:layout_constraintStart_toStartOf="parent"
                                 app:layout_constraintEnd_toEndOf="parent"
+                                android:overlapAnchor="false"
                                 android:layout_width="match_parent"
                                 android:layout_height="0dp"
-                                android:paddingTop="10dip"
-                                android:paddingStart="6dip"
-                                android:paddingEnd="6dip" />
+                                android:paddingBottom="5dip" />
 
                     </androidx.constraintlayout.widget.ConstraintLayout>
 
@@ -121,7 +122,7 @@
                             android:layout_marginTop="5dp"
                             android:layout_marginStart="0dp"
                             android:layout_width="match_parent"
-                            android:layout_height="75dp"
+                            android:layout_height="wrap_content"
                             android:layout_below="@+id/curr_zone">
 
                         <TextView
@@ -149,21 +150,10 @@
                                 app:layout_constraintEnd_toEndOf="parent"
                                 android:layout_marginEnd="15dp"
                                 app:layout_constraintBottom_toBottomOf="parent"
-                                app:layout_constraintTop_toTopOf="parent"
-                                app:layout_constraintVertical_bias="0.65"
-                                style="@style/value_card_main_text" />
-
-                        <ImageView
-                                android:layout_height="0dp"
-                                android:layout_width="wrap_content"
-                                android:src="@drawable/time_dial"
-                                app:layout_constraintEnd_toEndOf="parent"
-                                app:srcCompat="@drawable/schedule"
-                                android:layout_marginEnd="25dp"
-                                app:layout_constraintTop_toTopOf="@+id/original_time_val"
-                                app:layout_constraintBottom_toBottomOf="@+id/original_time_val"
-                                android:contentDescription="@string/original_time_set_icon" />
-
+                                style="@style/value_card_main_text"
+                                app:layout_constraintTop_toBottomOf="@+id/time_type"
+                                android:layout_marginBottom="15dp"
+                                android:layout_marginTop="5dp" />
 
                     </androidx.constraintlayout.widget.ConstraintLayout>
 
@@ -211,7 +201,7 @@
                                 android:id="@+id/home_zone_name"
                                 android:textColor="@color/main_text_color"
                                 android:layout_marginStart="15dp"
-                                android:layout_marginTop="15dp"
+                                android:layout_marginTop="10dp"
                                 android:layout_width="match_parent"
                                 android:layout_height="wrap_content"
                                 android:text="@string/home_zone_name_string"
@@ -225,7 +215,7 @@
                         <TextView
                                 android:id="@+id/home_gmt_offset"
                                 android:layout_marginStart="15dp"
-                                android:layout_marginTop="15dp"
+                                android:layout_marginTop="20dp"
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
                                 android:text="@string/home_gmt_offset_string"
@@ -243,7 +233,7 @@
                             android:id="@+id/converted_time_group"
                             android:background="@drawable/round_card_section"
                             android:layout_width="match_parent"
-                            android:layout_height="75dp"
+                            android:layout_height="wrap_content"
                             android:layout_marginTop="5dp"
                             android:layout_below="@+id/home_zone">
 
@@ -266,15 +256,29 @@
                                 android:layout_gravity="center_horizontal|center"
                                 android:gravity="center"
                                 android:layout_marginStart="15dp"
-                                android:layout_width="match_parent"
+                                android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
                                 app:layout_constraintStart_toStartOf="parent"
                                 app:layout_constraintEnd_toEndOf="parent"
                                 android:layout_marginEnd="15dp"
                                 app:layout_constraintBottom_toBottomOf="parent"
-                                app:layout_constraintTop_toTopOf="parent"
-                                app:layout_constraintVertical_bias="0.65"
-                                style="@style/value_card_main_text" />
+                                style="@style/value_card_main_text"
+                                app:layout_constraintTop_toBottomOf="@+id/converted_time_header"
+                                android:layout_marginBottom="15dp"
+                                android:layout_marginTop="5dp" />
+
+                        <TextView
+                                android:id="@+id/day_offset_indicator"
+                                android:layout_gravity="center_horizontal|center"
+                                android:gravity="center"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                app:layout_constraintBottom_toBottomOf="@+id/converted_time_val"
+                                style="@style/card_subheader_2"
+                                app:layout_constraintStart_toEndOf="@+id/converted_time_val"
+                                android:layout_marginStart="15dp"
+                                android:textSize="18sp"
+                                app:layout_constraintTop_toBottomOf="@+id/converted_time_header" />
 
                     </androidx.constraintlayout.widget.ConstraintLayout>
 
@@ -289,13 +293,12 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="@string/convert_button_label"
-                    android:drawableLeft="@drawable/schedule"
+                    app:icon="@drawable/schedule"
                     android:backgroundTint="@color/bg_action_button"
                     app:iconTint="@color/main_text_color"
                     app:cornerRadius="20dp"
-                    android:layout_marginTop="30dp"
-                    app:iconPadding="20dp"
-                    app:iconSize="10dp"
+                    app:iconPadding="10dp"
+                    app:iconSize="35dp"
                     android:gravity="center"
                     android:paddingStart="25dp"
                     android:paddingEnd="35dp"
@@ -306,10 +309,25 @@
                     app:layout_constraintLeft_toLeftOf="parent"
                     app:layout_constraintRight_toRightOf="parent"
                     android:includeFontPadding="false"
-                    style="@style/value_card_main_text" />
+                    style="@style/value_card_main_text"
+                    android:layout_marginTop="30dp" />
+
 
         </androidx.constraintlayout.widget.ConstraintLayout>
 
     </RelativeLayout>
+
+    <ImageView
+            android:layout_width="50dp"
+            android:layout_height="50dp"
+            android:src="@android:drawable/ic_dialog_alert"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            android:layout_marginStart="25dp"
+            android:layout_marginBottom="35dp"
+            app:tint="@color/colorPrimary"
+            android:contentDescription="@string/dnd_alert_string"
+            android:visibility="invisible"
+            android:id="@+id/dnd_alert" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>
