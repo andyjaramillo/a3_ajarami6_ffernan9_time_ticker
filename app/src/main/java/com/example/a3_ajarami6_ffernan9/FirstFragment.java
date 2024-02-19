@@ -12,7 +12,6 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.view.animation.DecelerateInterpolator;
 import android.widget.AdapterView;
-import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.Spinner;
 import android.widget.TextView;
@@ -31,23 +30,20 @@ import com.google.android.material.timepicker.MaterialTimePicker;
 import com.google.android.material.timepicker.TimeFormat;
 
 import java.util.Arrays;
-import java.util.Calendar;
 import java.util.List;
 import java.util.Locale;
 
 public class FirstFragment extends Fragment {
 
-    private FragmentFirstBinding binding;
     private SharedPreferences sharedPrefs;
     private String currentTimeZone;
-    private int[] originalTime;
     private String homeTimeZone;
     private boolean format24Hr;
 
-    private FloatingActionButton ctaButton;
+    private FragmentFirstBinding binding;
+    private FloatingActionButton fabButton;
     private Spinner timeZoneSpinner;
     private ImageView dndAlert;
-
     private TextView currOffsetTxt;
     private TextView originalTimeTxt;
     private TextView homeZoneText;
@@ -67,23 +63,25 @@ public class FirstFragment extends Fragment {
         super.onViewCreated(view, savedInstanceState);
         Context context = requireActivity();
 
-        timeZoneSpinner = view.findViewById(R.id.curr_time_zone_spinner);
-        ctaButton = requireActivity().findViewById(R.id.settings_cta);
-        dndAlert = view.findViewById(R.id.dnd_alert);
+        // initialize preferences
+        sharedPrefs = context.getSharedPreferences(
+            getString(R.string.shared_prefs),
+            Context.MODE_PRIVATE
+        );
 
+        // initialize relevant elements
+        timeZoneSpinner = view.findViewById(R.id.curr_time_zone_spinner);
+        fabButton = requireActivity().findViewById(R.id.settings_cta);
+        dndAlert = view.findViewById(R.id.dnd_alert);
         originalTimeTxt = view.findViewById(R.id.original_time_val);
         currOffsetTxt = view.findViewById(R.id.curr_gmt_offset);
         homeZoneText = view.findViewById(R.id.home_zone_name);
         homeOffsetTxt = view.findViewById(R.id.home_gmt_offset);
         convertedTimeTxt = view.findViewById(R.id.converted_time_val);
 
-        sharedPrefs = context.getSharedPreferences(
-            getString(R.string.shared_prefs),
-            Context.MODE_PRIVATE
-        );
+        loadStateFromPrefs();
 
-        loadStateFromPrefs(savedInstanceState);
-
+        // update current time zone
         attachAdapterToZoneSpinner(context, timeZoneSpinner);
         timeZoneSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
@@ -97,13 +95,14 @@ public class FirstFragment extends Fragment {
             }
         });
 
-        View originalTimeView = view.findViewById(R.id.original_time_card);
-        originalTimeView.setOnClickListener((v) -> openTimePicker());
+        // click "original time" card to pick new time
+        view.findViewById(R.id.original_time_card).setOnClickListener((v) -> openTimePicker());
 
-        Button convertButton = view.findViewById(R.id.convert_button);
-        convertButton.setOnClickListener((v) -> updateConvertedTime());
+        // click convert button to update converted time
+        view.findViewById(R.id.convert_button).setOnClickListener((v) -> updateConvertedTime());
 
-        ctaButton.setOnClickListener((v) -> {
+        // navigate to settings from fab button
+        fabButton.setOnClickListener((v) -> {
             NavController navController = Navigation.findNavController(
                 requireActivity(),
                 R.id.nav_host_fragment_content_main
@@ -115,28 +114,14 @@ public class FirstFragment extends Fragment {
     @Override
     public void onViewStateRestored(@Nullable Bundle savedInstanceState) {
         super.onViewStateRestored(savedInstanceState);
-        loadStateFromPrefs(savedInstanceState);
-        showCTAButton();
+        loadStateFromPrefs();
+        showFABButton();
     }
 
-    @Override
-    public void onSaveInstanceState(@NonNull Bundle outState) {
-        super.onSaveInstanceState(outState);
-        outState.putIntArray("original_time", originalTime);
-    }
-
-    private void loadStateFromPrefs(Bundle savedInstanceState) {
+    private void loadStateFromPrefs() {
         String[] zonesArray = getResources().getStringArray(R.array.time_zone_array);
         List<String> timeZones = Arrays.asList(zonesArray);
 
-        if (savedInstanceState != null) {
-            originalTime = savedInstanceState.getIntArray("original_time");
-        } else {
-            Calendar cal = Calendar.getInstance();
-            int hour = cal.get(Calendar.HOUR_OF_DAY);
-            int minute = cal.get(Calendar.MINUTE);
-            originalTime = new int[]{hour, minute};
-        }
         format24Hr = sharedPrefs.getBoolean(
             getString(R.string.format_24h_pref),
             false
@@ -154,8 +139,16 @@ public class FirstFragment extends Fragment {
         currOffsetTxt.setText(getGMTOffsetString(currentTimeZone));
         homeZoneText.setText(homeTimeZone);
         homeOffsetTxt.setText(getGMTOffsetString(homeTimeZone));
-        originalTimeTxt.setText(formatTime(originalTime));
+        originalTimeTxt.setText(formatTime(getOriginalTime()));
         updateConvertedTime();
+    }
+
+    private int[] getOriginalTime() {
+        return ((MainActivity) requireActivity()).getOriginalTime();
+    }
+
+    private void setOriginalTime(int[] time) {
+        ((MainActivity) requireActivity()).setOriginalTime(time);
     }
 
     private void updateCurrTimeZone(String timeZone) {
@@ -167,6 +160,7 @@ public class FirstFragment extends Fragment {
     }
 
     private void openTimePicker() {
+        int[] originalTime = getOriginalTime();
         MaterialTimePicker timePicker = new MaterialTimePicker.Builder()
             .setTheme(R.style.time_picker_theme)
             .setInputMode(MaterialTimePicker.INPUT_MODE_CLOCK)
@@ -178,8 +172,8 @@ public class FirstFragment extends Fragment {
         timePicker.addOnPositiveButtonClickListener((v) -> {
             int hour = timePicker.getHour();
             int minute = timePicker.getMinute();
-            originalTime = new int[]{hour, minute};
-            originalTimeTxt.setText(formatTime(originalTime));
+            setOriginalTime(new int[]{hour, minute});
+            originalTimeTxt.setText(formatTime(getOriginalTime()));
         });
 
         FragmentManager manager = requireActivity().getSupportFragmentManager();
@@ -227,6 +221,7 @@ public class FirstFragment extends Fragment {
             return;
         }
 
+        int[] originalTime = getOriginalTime();
         int hour = originalTime[0];
         int minute = originalTime[1];
         int dayDiff = 0;
@@ -259,8 +254,8 @@ public class FirstFragment extends Fragment {
         convertedTimeTxt.setText(convertedTime);
     }
 
-    private void showCTAButton() {
-        ctaButton.animate()
+    private void showFABButton() {
+        fabButton.animate()
             .translationY(0)
             .setInterpolator(new DecelerateInterpolator(1f))
             .start();

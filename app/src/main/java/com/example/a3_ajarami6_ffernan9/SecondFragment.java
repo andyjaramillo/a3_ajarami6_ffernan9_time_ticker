@@ -13,7 +13,6 @@ import android.view.ViewGroup;
 import android.view.animation.AccelerateInterpolator;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.AdapterView;
-import android.widget.Button;
 import android.widget.Spinner;
 import android.widget.TextView;
 
@@ -34,16 +33,15 @@ import java.util.Objects;
 
 public class SecondFragment extends Fragment {
 
-    private FragmentSecondBinding binding;
     private SharedPreferences sharedPrefs;
     private String homeTimeZone;
     private String homeCity;
     private boolean format24Hr;
 
+    private FragmentSecondBinding binding;
     private Spinner timeZoneSpinner;
     private TextInputEditText homeCityInput;
     private MaterialSwitch formatToggle;
-
     private TextView homeZoneOffset;
 
     @Override
@@ -59,12 +57,13 @@ public class SecondFragment extends Fragment {
         super.onViewCreated(view, savedInstanceState);
         Context context = requireActivity();
 
+        // initialize preferences
         sharedPrefs = context.getSharedPreferences(
             getString(R.string.shared_prefs),
             Context.MODE_PRIVATE
         );
 
-        // initialize relevant views
+        // initialize relevant elements
         timeZoneSpinner = view.findViewById(R.id.home_time_zone_spinner);
         homeCityInput = view.findViewById(R.id.home_city_edit_field);
         homeZoneOffset = view.findViewById(R.id.home_gmt_offset);
@@ -72,6 +71,7 @@ public class SecondFragment extends Fragment {
 
         loadStateFromPrefs(savedInstanceState);
 
+        // update home time zone
         attachAdapterToZoneSpinner(context, timeZoneSpinner);
         timeZoneSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
@@ -86,6 +86,7 @@ public class SecondFragment extends Fragment {
             }
         });
 
+        // hide keyboard when input field loses focus
         homeCityInput.setOnFocusChangeListener((v, hasFocus) -> {
             if (!hasFocus) {
                 InputMethodManager imm = (InputMethodManager) context.getSystemService(INPUT_METHOD_SERVICE);
@@ -93,21 +94,22 @@ public class SecondFragment extends Fragment {
             }
         });
 
+        // toggle AM/PM and 24H formats
         formatToggle.setOnCheckedChangeListener((buttonView, isChecked) -> format24Hr = isChecked);
 
-        Button saveButton = view.findViewById(R.id.save_button);
-        saveButton.setOnClickListener((view1) -> {
+        // click save button to update preferences
+        view.findViewById(R.id.save_button).setOnClickListener((view1) -> {
             homeCity = Objects.requireNonNull(homeCityInput.getText()).toString();
             saveSettings();
         });
 
-        hideCTAButton();
+        hideFABButton();
     }
 
     @Override
     public void onViewStateRestored(@Nullable Bundle savedInstanceState) {
         super.onViewStateRestored(savedInstanceState);
-        hideCTAButton();
+        hideFABButton();
         loadStateFromPrefs(savedInstanceState);
     }
 
@@ -180,7 +182,7 @@ public class SecondFragment extends Fragment {
         navController.navigate(R.id.action_SecondFragment_to_FirstFragment);
     }
 
-    private void hideCTAButton() {
+    private void hideFABButton() {
         FloatingActionButton ctaButton = requireActivity().findViewById(R.id.settings_cta);
         ctaButton.animate()
             .translationY(ctaButton.getCustomSize() * 1.8f)

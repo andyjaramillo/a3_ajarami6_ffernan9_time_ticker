@@ -18,7 +18,6 @@
                 android:layout_width="match_parent"
                 android:layout_height="?attr/actionBarSize"
                 android:background="@color/main_bg_color"
-                android:foregroundTint="@color/main_text_color"
                 app:title="@string/main_view_header"
                 app:titleTextColor="@color/main_text_color"
                 app:navigationIconTint="@color/sub_text_color"
